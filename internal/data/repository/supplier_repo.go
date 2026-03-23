@@ -17,21 +17,42 @@ func NewSupplierRepo(db *sqlx.DB) *SupplierRepo {
 }
 
 func (r *SupplierRepo) GetAll(ctx context.Context) ([]*models.Supplier, error) {
-	return nil, nil
+	var models []*models.Supplier
+	query := `select id, name, address_id, phone_number
+			  from suppliers`
+	err := r.db.SelectContext(ctx, models, query)
+	if err != nil {
+		return nil, err
+	}
+	return models, nil
 }
 
 func (r *SupplierRepo) GetById(ctx context.Context, id uuid.UUID) (*models.Supplier, error) {
-	return nil, nil
+	var model models.Supplier
+	query := `select id, name, address_id, phone_number
+			  from suppliers
+			  where id = $1`
+	err := r.db.GetContext(ctx, &model, query, id)
+	if err != nil {
+		return nil, err
+	}
+	return &model, nil
 }
 
 func (r *SupplierRepo) Create(ctx context.Context, model *models.Supplier) error {
-	return nil
+	query := `insert into suppliers (name, address_id, phone_number) values ($1, $2, $3)`
+	_, err := r.db.ExecContext(ctx, query, model.Name, model.AddressId, model.PhoneNumber)
+	return err
 }
 
 func (r *SupplierRepo) Update(ctx context.Context, model *models.Supplier) error {
-	return nil
+	query := `update suppliers set address_id = $1 where id = $2`
+	_, err := r.db.ExecContext(ctx, query, model.AddressId, model.Id)
+	return err
 }
 
 func (r *SupplierRepo) Delete(ctx context.Context, id uuid.UUID) error {
-	return nil
+	query := `delete from suppliers where id = $1`
+	_, err := r.db.ExecContext(ctx, query, id)
+	return err
 }

@@ -17,7 +17,7 @@ func NewAddressRepo(db *sqlx.DB) *AddressRepo {
 }
 
 func (r *AddressRepo) GetById(ctx context.Context, id uuid.UUID) (*models.Address, error) {
-	model := models.Address{}
+	var model models.Address
 	query := `select id, coutry, city, street
 			  from addresses where id = $1`
 	err := r.db.GetContext(ctx, &model, query, id)
@@ -36,9 +36,15 @@ func (r *AddressRepo) Create(ctx context.Context, model *models.Address) error {
 }
 
 func (r *AddressRepo) Update(ctx context.Context, model *models.Address) error {
-	return nil
+	query := `update addresses set coutry = $1, city = $2, street = $3
+			  where id = $4`
+	_, err := r.db.ExecContext(ctx, query,
+		model.Country, model.City, model.Street, model.Id)
+	return err
 }
 
 func (r *AddressRepo) Delete(ctx context.Context, id uuid.UUID) error {
-	return nil
+	query := `delete from addresses where id = $1`
+	_, err := r.db.ExecContext(ctx, query, id)
+	return err
 }
