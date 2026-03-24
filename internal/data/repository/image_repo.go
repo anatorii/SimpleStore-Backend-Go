@@ -18,7 +18,7 @@ func NewImageRepo(db *sqlx.DB) *ImageRepo {
 
 func (r *ImageRepo) GetById(ctx context.Context, id uuid.UUID) (*models.Image, error) {
 	var model models.Image
-	query := `select id, image, description
+	query := `select id, data, description
 			  from images
 			  where id = $1`
 	err := r.db.GetContext(ctx, &model, query, id)
@@ -30,7 +30,7 @@ func (r *ImageRepo) GetById(ctx context.Context, id uuid.UUID) (*models.Image, e
 
 func (r *ImageRepo) GetByProductId(ctx context.Context, productId uuid.UUID) (*models.Image, error) {
 	var model models.Image
-	query := `select id, image, description
+	query := `select id, data, description
 			  from images
 			  where id = $1`
 	err := r.db.GetContext(ctx, &model, query, productId)
@@ -41,13 +41,13 @@ func (r *ImageRepo) GetByProductId(ctx context.Context, productId uuid.UUID) (*m
 }
 
 func (r *ImageRepo) Create(ctx context.Context, model *models.Image) error {
-	query := `insert into images (image, description) values ($1, $2)`
+	query := `insert into images (data, description) values ($1, $2)`
 	_, err := r.db.ExecContext(ctx, query, model.Data, model.Description)
 	return err
 }
 
 func (r *ImageRepo) Update(ctx context.Context, model *models.Image) error {
-	query := `update images set image = $1, description = $2`
+	query := `update images set data = $1, description = $2`
 	_, err := r.db.ExecContext(ctx, query, model.Data, model.Description)
 	return err
 }

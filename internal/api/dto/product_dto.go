@@ -13,8 +13,8 @@ type CreateProductRequest struct {
 	Price          float32   `json:"price" validate:"required,float"`
 	AvailableStock int       `json:"available_stock" validate:"required,integer,min=1,max=1000000000"`
 	LastUpdateDate time.Time `json:"last_update_date" validate:"omitempty,date"`
-	SupplierId     time.Time `json:"supplier_id" validate:"omitempty,uuid"`
-	ImageId        time.Time `json:"image_id" validate:"omitempty,uuid"`
+	SupplierId     uuid.UUID `json:"supplier_id" validate:"omitempty,uuid"`
+	ImageId        uuid.UUID `json:"image_id" validate:"omitempty,uuid"`
 }
 
 type UpdateProductAvailableRequest struct {
@@ -27,16 +27,38 @@ type ProductResponse struct {
 	Price          float32   `json:"price"`
 	AvailableStock int       `json:"available_stock"`
 	LastUpdateDate time.Time `json:"last_update_date"`
-	SupplierId     time.Time `json:"supplier_id"`
-	ImageId        time.Time `json:"image_id"`
+	SupplierId     uuid.UUID `json:"supplier_id"`
+	ImageId        uuid.UUID `json:"image_id"`
 	CreatedAt      time.Time `json:"created_at"`
 	UpdatedAt      time.Time `json:"updated_at"`
 }
 
 func ModelToProductResponse(m *models.Product) *ProductResponse {
-
+	r := ProductResponse{
+		Id:             m.Id,
+		Name:           m.Name,
+		Price:          m.Price,
+		AvailableStock: m.AvailableStock,
+		LastUpdateDate: m.LastUpdateDate,
+		SupplierId:     m.SupplierId,
+		ImageId:        m.ImageId,
+	}
+	return &r
 }
 
-func ModelToProductResponseList(m []*models.Client) []*ProductResponse {
-
+func ModelToProductResponseList(m []*models.Product) []*ProductResponse {
+	l := make([]*ProductResponse, 0)
+	for _, v := range m {
+		r := ProductResponse{
+			Id:             v.Id,
+			Name:           v.Name,
+			Price:          v.Price,
+			AvailableStock: v.AvailableStock,
+			LastUpdateDate: v.LastUpdateDate,
+			SupplierId:     v.SupplierId,
+			ImageId:        v.ImageId,
+		}
+		l = append(l, &r)
+	}
+	return l
 }

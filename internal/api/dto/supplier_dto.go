@@ -27,9 +27,25 @@ type SupplierResponse struct {
 }
 
 func ModelToSupplierResponse(m *models.Supplier) *SupplierResponse {
-
+	r := SupplierResponse{
+		Id:          m.Id,
+		Name:        m.Name,
+		PhoneNumber: m.PhoneNumber,
+		AddressId:   m.AddressId.String(),
+	}
+	return &r
 }
 
 func ModelToSupplierResponseList(m []*models.Supplier) []*SupplierResponse {
-
+	l := make([]*SupplierResponse, 0)
+	for _, v := range m {
+		r := SupplierResponse{
+			Id:          v.Id,
+			Name:        v.Name,
+			PhoneNumber: v.PhoneNumber,
+			AddressId:   v.AddressId.String(),
+		}
+		l = append(l, &r)
+	}
+	return l
 }

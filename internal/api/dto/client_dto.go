@@ -33,9 +33,29 @@ type ClientResponse struct {
 }
 
 func ModelToClientResponse(m *models.Client) *ClientResponse {
-
+	r := ClientResponse{
+		Id:            m.Id,
+		ClientName:    m.ClientName,
+		ClientSurname: m.ClientSurname,
+		Birthday:      m.Birthday,
+		Gender:        m.Gender,
+		AddressId:     m.AddressId.String(),
+	}
+	return &r
 }
 
 func ModelToClientResponseList(m []*models.Client) []*ClientResponse {
-
+	l := make([]*ClientResponse, 0)
+	for _, v := range m {
+		r := ClientResponse{
+			Id:            v.Id,
+			ClientName:    v.ClientName,
+			ClientSurname: v.ClientSurname,
+			Birthday:      v.Birthday,
+			Gender:        v.Gender,
+			AddressId:     v.AddressId.String(),
+		}
+		l = append(l, &r)
+	}
+	return l
 }

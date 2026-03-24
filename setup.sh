@@ -4,7 +4,7 @@ mkdir -p ./api/
 mkdir -p ./cmd/shop/
 mkdir -p ./internal/config/
 mkdir -p ./internal/domain/models/
-mkdir -p ./internal/domain/interfaces/
+mkdir -p ./internal/domain/repos/
 mkdir -p ./internal/data/postgres/
 mkdir -p ./internal/data/migrations/
 mkdir -p ./internal/data/repository/
