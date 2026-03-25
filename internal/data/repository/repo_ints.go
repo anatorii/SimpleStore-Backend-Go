@@ -1,4 +1,4 @@
-package service
+package repository
 
 import (
 	"context"
@@ -7,7 +7,7 @@ import (
 	"github.com/google/uuid"
 )
 
-type ClientService interface {
+type ClientRepo interface {
 	GetAll(ctx context.Context) ([]*models.Client, error)
 	GetById(ctx context.Context, id uuid.UUID) (*models.Client, error)
 	GetByName(ctx context.Context, fullname models.FullName) (*models.Client, error)
@@ -16,7 +16,7 @@ type ClientService interface {
 	Delete(ctx context.Context, id uuid.UUID) error
 }
 
-type SupplierService interface {
+type SupplierRepo interface {
 	GetAll(ctx context.Context) ([]*models.Supplier, error)
 	GetById(ctx context.Context, id uuid.UUID) (*models.Supplier, error)
 	Create(ctx context.Context, model *models.Supplier) error
@@ -24,7 +24,7 @@ type SupplierService interface {
 	Delete(ctx context.Context, id uuid.UUID) error
 }
 
-type ProductService interface {
+type ProductRepo interface {
 	GetAll(ctx context.Context) ([]*models.Product, error)
 	GetById(ctx context.Context, id uuid.UUID) (*models.Product, error)
 	Create(ctx context.Context, model *models.Product) error
@@ -32,7 +32,7 @@ type ProductService interface {
 	Delete(ctx context.Context, id uuid.UUID) error
 }
 
-type ImageService interface {
+type ImageRepo interface {
 	GetById(ctx context.Context, id uuid.UUID) (*models.Image, error)
 	GetByProductId(ctx context.Context, productId uuid.UUID) (*models.Image, error)
 	Create(ctx context.Context, model *models.Image) error

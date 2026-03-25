@@ -2,36 +2,49 @@ package service
 
 import (
 	"context"
+	"storeapi/internal/data/repository"
 	"storeapi/internal/domain/models"
-	"storeapi/internal/domain/repos"
 
 	"github.com/google/uuid"
 )
 
 type imageService struct {
-	repo repos.ImageRepoInt
+	repo        repository.ImageRepo
+	productRepo repository.ProductRepo
 }
 
-func NewImageService(repo repos.ImageRepoInt) ImageService {
-	return &imageService{repo: repo}
+func NewImageService(repo repository.ImageRepo, productRepo repository.ProductRepo) ImageService {
+	return &imageService{repo: repo, productRepo: productRepo}
 }
 
 func (s *imageService) GetById(ctx context.Context, id uuid.UUID) (*models.Image, error) {
-	return nil, nil
+	model, err := s.repo.GetById(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	return model, nil
 }
 
 func (s *imageService) GetByProductId(ctx context.Context, productId uuid.UUID) (*models.Image, error) {
-	return nil, nil
+	product, err := s.productRepo.GetById(ctx, productId)
+	if err != nil {
+		return nil, err
+	}
+	model, err := s.repo.GetById(ctx, product.ImageId)
+	if err != nil {
+		return nil, err
+	}
+	return model, nil
 }
 
 func (s *imageService) Create(ctx context.Context, model *models.Image) error {
-	return nil
+	return s.repo.Create(ctx, model)
 }
 
 func (s *imageService) Update(ctx context.Context, model *models.Image) error {
-	return nil
+	return s.repo.Update(ctx, model)
 }
 
 func (s *imageService) Delete(ctx context.Context, id uuid.UUID) error {
-	return nil
+	return s.repo.Delete(ctx, id)
 }

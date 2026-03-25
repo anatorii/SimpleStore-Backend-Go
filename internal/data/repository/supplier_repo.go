@@ -8,15 +8,15 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-type SupplierRepo struct {
+type supplierRepo struct {
 	db *sqlx.DB
 }
 
-func NewSupplierRepo(db *sqlx.DB) *SupplierRepo {
-	return &SupplierRepo{db: db}
+func NewSupplierRepo(db *sqlx.DB) SupplierRepo {
+	return &supplierRepo{db: db}
 }
 
-func (r *SupplierRepo) GetAll(ctx context.Context) ([]*models.Supplier, error) {
+func (r *supplierRepo) GetAll(ctx context.Context) ([]*models.Supplier, error) {
 	var models []*models.Supplier
 	query := `select id, name, address_id, phone_number
 			  from suppliers`
@@ -27,7 +27,7 @@ func (r *SupplierRepo) GetAll(ctx context.Context) ([]*models.Supplier, error) {
 	return models, nil
 }
 
-func (r *SupplierRepo) GetById(ctx context.Context, id uuid.UUID) (*models.Supplier, error) {
+func (r *supplierRepo) GetById(ctx context.Context, id uuid.UUID) (*models.Supplier, error) {
 	var model models.Supplier
 	query := `select id, name, address_id, phone_number
 			  from suppliers
@@ -39,19 +39,19 @@ func (r *SupplierRepo) GetById(ctx context.Context, id uuid.UUID) (*models.Suppl
 	return &model, nil
 }
 
-func (r *SupplierRepo) Create(ctx context.Context, model *models.Supplier) error {
+func (r *supplierRepo) Create(ctx context.Context, model *models.Supplier) error {
 	query := `insert into suppliers (name, address_id, phone_number) values ($1, $2, $3)`
 	_, err := r.db.ExecContext(ctx, query, model.Name, model.AddressId, model.PhoneNumber)
 	return err
 }
 
-func (r *SupplierRepo) Update(ctx context.Context, model *models.Supplier) error {
+func (r *supplierRepo) Update(ctx context.Context, model *models.Supplier) error {
 	query := `update suppliers set address_id = $1 where id = $2`
 	_, err := r.db.ExecContext(ctx, query, model.AddressId, model.Id)
 	return err
 }
 
-func (r *SupplierRepo) Delete(ctx context.Context, id uuid.UUID) error {
+func (r *supplierRepo) Delete(ctx context.Context, id uuid.UUID) error {
 	query := `delete from suppliers where id = $1`
 	_, err := r.db.ExecContext(ctx, query, id)
 	return err

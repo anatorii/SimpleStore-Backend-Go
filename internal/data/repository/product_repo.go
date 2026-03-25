@@ -8,15 +8,15 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-type ProductRepo struct {
+type productRepo struct {
 	db *sqlx.DB
 }
 
-func NewProductRepo(db *sqlx.DB) *ProductRepo {
-	return &ProductRepo{db: db}
+func NewProductRepo(db *sqlx.DB) ProductRepo {
+	return &productRepo{db: db}
 }
 
-func (r *ProductRepo) GetAll(ctx context.Context) ([]*models.Product, error) {
+func (r *productRepo) GetAll(ctx context.Context) ([]*models.Product, error) {
 	var models []*models.Product
 	query := `select id, name, category, price,
 					 available_stock, last_update_date, supplier_id, image_id
@@ -28,7 +28,7 @@ func (r *ProductRepo) GetAll(ctx context.Context) ([]*models.Product, error) {
 	return models, nil
 }
 
-func (r *ProductRepo) GetById(ctx context.Context, id uuid.UUID) (*models.Product, error) {
+func (r *productRepo) GetById(ctx context.Context, id uuid.UUID) (*models.Product, error) {
 	var model models.Product
 	query := `select id, name, category, price,
 					 available_stock, last_update_date, supplier_id, image_id
@@ -41,7 +41,7 @@ func (r *ProductRepo) GetById(ctx context.Context, id uuid.UUID) (*models.Produc
 	return &model, nil
 }
 
-func (r *ProductRepo) Create(ctx context.Context, model *models.Product) error {
+func (r *productRepo) Create(ctx context.Context, model *models.Product) error {
 	query := `insert into products (name, category, price,
 									available_stock, last_update_date, supplier_id, image_id)
 			  values ($1, $2, $3, $4, $5, $6, $7)`
@@ -50,7 +50,7 @@ func (r *ProductRepo) Create(ctx context.Context, model *models.Product) error {
 	return err
 }
 
-func (r *ProductRepo) Update(ctx context.Context, model *models.Product) error {
+func (r *productRepo) Update(ctx context.Context, model *models.Product) error {
 	query := `update products set
 				name = $1,
 				category = $2,
@@ -72,7 +72,7 @@ func (r *ProductRepo) Update(ctx context.Context, model *models.Product) error {
 	return err
 }
 
-func (r *ProductRepo) Delete(ctx context.Context, id uuid.UUID) error {
+func (r *productRepo) Delete(ctx context.Context, id uuid.UUID) error {
 	query := `delete from products where id = $1`
 	_, err := r.db.ExecContext(ctx, query, id)
 	return err

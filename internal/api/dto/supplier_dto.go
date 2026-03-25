@@ -8,9 +8,9 @@ import (
 )
 
 type CreateSupplierRequest struct {
-	Name        string `json:"name" validate:"required,min=3,max=255"`
-	AddressId   string `json:"address_id" validate:"omitempty,uuid"`
-	PhoneNumber string `json:"phone_number" validate:"required,min=3,max=255"`
+	Name        string    `json:"name" validate:"required,min=3,max=255"`
+	AddressId   uuid.UUID `json:"address_id" validate:"omitempty,uuid"`
+	PhoneNumber string    `json:"phone_number" validate:"required,min=3,max=255"`
 }
 
 type UpdateSupplierAddressRequest struct {

@@ -13,7 +13,7 @@ type CreateClientRequest struct {
 	Birthday         time.Time `json:"birthday" validate:"required,date"`
 	Gender           string    `json:"gender" validate:"required,min=1,max=1"`
 	RegistrationDate time.Time `json:"registration_date" validate:"required,date"`
-	AddressId        string    `json:"address_id" validate:"omitempty,uuid"`
+	AddressId        uuid.UUID `json:"address_id" validate:"omitempty,uuid"`
 }
 
 type UpdateClientAddressRequest struct {

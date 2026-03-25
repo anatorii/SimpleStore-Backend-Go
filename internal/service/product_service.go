@@ -2,36 +2,45 @@ package service
 
 import (
 	"context"
+	"fmt"
+	"storeapi/internal/data/repository"
 	"storeapi/internal/domain/models"
-	"storeapi/internal/domain/repos"
 
 	"github.com/google/uuid"
 )
 
 type productService struct {
-	repo repos.ProductRepoInt
+	repo repository.ProductRepo
 }
 
-func NewProductService(repo repos.ProductRepoInt) ProductService {
+func NewProductService(repo repository.ProductRepo) ProductService {
 	return &productService{repo: repo}
 }
 
 func (s *productService) GetAll(ctx context.Context) ([]*models.Product, error) {
-	return nil, nil
+	list, err := s.repo.GetAll(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get products: %w", err)
+	}
+	return list, nil
 }
 
 func (s *productService) GetById(ctx context.Context, id uuid.UUID) (*models.Product, error) {
-	return nil, nil
+	model, err := s.repo.GetById(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	return model, nil
 }
 
 func (s *productService) Create(ctx context.Context, model *models.Product) error {
-	return nil
+	return s.repo.Create(ctx, model)
 }
 
 func (s *productService) Update(ctx context.Context, model *models.Product) error {
-	return nil
+	return s.repo.Update(ctx, model)
 }
 
 func (s *productService) Delete(ctx context.Context, id uuid.UUID) error {
-	return nil
+	return s.repo.Delete(ctx, id)
 }

@@ -18,6 +18,10 @@ type Config struct {
 	DBSSLMode  string
 }
 
+func NewConfig() (*Config, error) {
+	return Load()
+}
+
 func Load() (*Config, error) {
 	if err := godotenv.Load(); err != nil {
 		return nil, fmt.Errorf("error loading .env file: %w", err)

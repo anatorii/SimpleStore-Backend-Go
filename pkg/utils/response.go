@@ -25,7 +25,3 @@ func SendJSON(w http.ResponseWriter, code int, payload interface{}) {
 func SendError(w http.ResponseWriter, code int, message string) {
 	SendJSON(w, code, ErrorResponse{Error: message})
 }
-
-func SendImage(w http.ResponseWriter, code int) {
-
-}

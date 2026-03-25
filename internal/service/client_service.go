@@ -2,30 +2,35 @@ package service
 
 import (
 	"context"
+	"fmt"
+	"storeapi/internal/data/repository"
 	"storeapi/internal/domain/models"
-	"storeapi/internal/domain/repos"
 
 	"github.com/google/uuid"
 )
 
 type clientService struct {
-	repo repos.ClientRepoInt
+	repo repository.ClientRepo
 }
 
-func NewClientService(repo repos.ClientRepoInt) ClientService {
+func NewClientService(repo repository.ClientRepo) ClientService {
 	return &clientService{repo: repo}
 }
 
 func (s *clientService) GetAll(ctx context.Context) ([]*models.Client, error) {
-	return nil, nil
+	list, err := s.repo.GetAll(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get clients: %w", err)
+	}
+	return list, nil
 }
 
 func (s *clientService) GetById(ctx context.Context, id uuid.UUID) (*models.Client, error) {
-	client, err := s.repo.GetById(ctx, id)
+	model, err := s.repo.GetById(ctx, id)
 	if err != nil {
 		return nil, err
 	}
-	return client, nil
+	return model, nil
 }
 
 func (s *clientService) GetByName(ctx context.Context, fullname models.FullName) (*models.Client, error) {
@@ -37,13 +42,13 @@ func (s *clientService) GetByName(ctx context.Context, fullname models.FullName)
 }
 
 func (s *clientService) Create(ctx context.Context, model *models.Client) error {
-	return nil
+	return s.repo.Create(ctx, model)
 }
 
 func (s *clientService) Update(ctx context.Context, model *models.Client) error {
-	return nil
+	return s.repo.Update(ctx, model)
 }
 
 func (s *clientService) Delete(ctx context.Context, id uuid.UUID) error {
-	return nil
+	return s.repo.Delete(ctx, id)
 }
