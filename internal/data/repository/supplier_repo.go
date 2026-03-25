@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"errors"
 	"storeapi/internal/domain/models"
 
 	"github.com/google/uuid"
@@ -53,6 +54,16 @@ func (r *supplierRepo) Update(ctx context.Context, model *models.Supplier) error
 
 func (r *supplierRepo) Delete(ctx context.Context, id uuid.UUID) error {
 	query := `delete from suppliers where id = $1`
-	_, err := r.db.ExecContext(ctx, query, id)
-	return err
+	result, err := r.db.ExecContext(ctx, query, id)
+	if err != nil {
+		return err
+	}
+	cnt, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if cnt == 0 {
+		return errors.New("NO_AFFECTED")
+	}
+	return nil
 }

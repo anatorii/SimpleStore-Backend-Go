@@ -126,6 +126,10 @@ func (h SupplierHandler) DeleteSupplier(w http.ResponseWriter, r *http.Request) 
 
 	err = h.supplierService.Delete(r.Context(), id)
 	if err != nil {
+		if err.Error() == "NO_AFFECTED" {
+			utils.SendError(w, http.StatusNotFound, "Supplier not found")
+			return
+		}
 		utils.SendError(w, http.StatusInternalServerError, err.Error())
 		return
 	}

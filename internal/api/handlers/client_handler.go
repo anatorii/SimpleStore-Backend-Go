@@ -130,6 +130,10 @@ func (h ClientHandler) DeleteClient(w http.ResponseWriter, r *http.Request) {
 
 	err = h.clientService.Delete(r.Context(), id)
 	if err != nil {
+		if err.Error() == "NO_AFFECTED" {
+			utils.SendError(w, http.StatusNotFound, "Client not found")
+			return
+		}
 		utils.SendError(w, http.StatusInternalServerError, err.Error())
 		return
 	}

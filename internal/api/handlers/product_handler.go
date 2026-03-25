@@ -131,6 +131,10 @@ func (h ProductHandler) DeleteProduct(w http.ResponseWriter, r *http.Request) {
 
 	err = h.productService.Delete(r.Context(), id)
 	if err != nil {
+		if err.Error() == "NO_AFFECTED" {
+			utils.SendError(w, http.StatusNotFound, "Product not found")
+			return
+		}
 		utils.SendError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
