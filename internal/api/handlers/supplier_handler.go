@@ -46,7 +46,7 @@ func (h SupplierHandler) GetSupplierById(w http.ResponseWriter, r *http.Request)
 
 	supplier, err := h.supplierService.GetById(r.Context(), id)
 	if err != nil {
-		utils.SendError(w, http.StatusBadRequest, "Supplier not found")
+		utils.SendError(w, http.StatusNotFound, "Supplier not found")
 		return
 	}
 

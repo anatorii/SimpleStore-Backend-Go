@@ -47,7 +47,7 @@ func (h ProductHandler) GetProductById(w http.ResponseWriter, r *http.Request) {
 
 	product, err := h.productService.GetById(r.Context(), id)
 	if err != nil {
-		utils.SendError(w, http.StatusBadRequest, "Product not found")
+		utils.SendError(w, http.StatusNotFound, "Product not found")
 		return
 	}
 

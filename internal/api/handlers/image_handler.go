@@ -36,7 +36,7 @@ func (h ImageHandler) GetImageById(w http.ResponseWriter, r *http.Request) {
 
 	image, err := h.imageService.GetById(r.Context(), id)
 	if err != nil {
-		utils.SendError(w, http.StatusBadRequest, "Image not found")
+		utils.SendError(w, http.StatusNotFound, "Image not found")
 		return
 	}
 
@@ -54,13 +54,13 @@ func (h ImageHandler) GetProductImageById(w http.ResponseWriter, r *http.Request
 
 	product, err := h.productService.GetById(r.Context(), id)
 	if err != nil {
-		utils.SendError(w, http.StatusBadRequest, "Product not found")
+		utils.SendError(w, http.StatusNotFound, "Product not found")
 		return
 	}
 
 	image, err := h.imageService.GetById(r.Context(), product.Id)
 	if err != nil {
-		utils.SendError(w, http.StatusBadRequest, "Image not found")
+		utils.SendError(w, http.StatusNotFound, "Image not found")
 		return
 	}
 

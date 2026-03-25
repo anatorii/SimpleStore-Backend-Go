@@ -47,7 +47,7 @@ func (h ClientHandler) GetClientByName(w http.ResponseWriter, r *http.Request) {
 
 	client, err := h.clientService.GetByName(r.Context(), models.FullName{Name: name, Surname: surname})
 	if err != nil {
-		utils.SendError(w, http.StatusBadRequest, "Client not found")
+		utils.SendError(w, http.StatusNotFound, "Client not found")
 		return
 	}
 
