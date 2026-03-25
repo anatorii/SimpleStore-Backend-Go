@@ -49,4 +49,6 @@ func NewPostgres(cfg Config) (*sqlx.DB, error) {
 	fmt.Println("Successfully connected to database")
 
 	return db, nil
+
+	// return nil, nil
 }

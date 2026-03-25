@@ -53,5 +53,11 @@ dkms.conf
 .idea
 .vscode
 .env
-./shop
+/shop
 
+# Binaries
+/bin/
+/dist/
+
+# Swagger docs
+/docs/

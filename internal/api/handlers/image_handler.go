@@ -27,6 +27,18 @@ func NewImageHandler(imageService service.ImageService, productService service.P
 	}
 }
 
+// GetImage godoc
+// @Summary Get image by name and surname
+// @Description Get image details by name and surname
+// @Tags images
+// @Produce json
+// @Param name path string true "name" format(string)
+// @Param surname path string true "surname" format(string)
+// @Success 200 {object} dto.ImageResponse "Image found"
+// @Failure 400 {object} utils.ErrorResponse "Name or surname are not specified"
+// @Failure 404 {object} utils.ErrorResponse "Image not found"
+// @Failure 500 {object} utils.ErrorResponse "Internal server error"
+// @Router /images/{name}/{surname} [get]
 func (h ImageHandler) GetImageById(w http.ResponseWriter, r *http.Request) {
 	id, err := uuid.Parse(chi.URLParam(r, "id"))
 	if err != nil {
@@ -45,6 +57,18 @@ func (h ImageHandler) GetImageById(w http.ResponseWriter, r *http.Request) {
 	utils.SendJSON(w, http.StatusOK, response)
 }
 
+// GetImage godoc
+// @Summary Get image by name and surname
+// @Description Get image details by name and surname
+// @Tags images
+// @Produce json
+// @Param name path string true "name" format(string)
+// @Param surname path string true "surname" format(string)
+// @Success 200 {object} dto.ImageResponse "User found"
+// @Failure 400 {object} utils.ErrorResponse "Name or surname are not specified"
+// @Failure 404 {object} utils.ErrorResponse "Image not found"
+// @Failure 500 {object} utils.ErrorResponse "Internal server error"
+// @Router /images/{name}/{surname} [get]
 func (h ImageHandler) GetProductImageById(w http.ResponseWriter, r *http.Request) {
 	id, err := uuid.Parse(chi.URLParam(r, "id"))
 	if err != nil {
@@ -69,6 +93,17 @@ func (h ImageHandler) GetProductImageById(w http.ResponseWriter, r *http.Request
 	utils.SendJSON(w, http.StatusOK, response)
 }
 
+// CreateImage godoc
+// @Summary Create a new image
+// @Description Create a new image
+// @Tags images
+// @Accept json
+// @Produce json
+// @Param request body dto.CreateImageRequest true "Image data"
+// @Success 200 {object} dto.ImageResponse "Image created successfully"
+// @Failure 400 {object} utils.ErrorResponse "Invalid request payload or validation error"
+// @Failure 500 {object} utils.ErrorResponse "Internal server error"
+// @Router /images [post]
 func (h ImageHandler) CreateImage(w http.ResponseWriter, r *http.Request) {
 	var request dto.CreateImageRequest
 	err := json.NewDecoder(r.Body).Decode(&request)
@@ -95,6 +130,19 @@ func (h ImageHandler) CreateImage(w http.ResponseWriter, r *http.Request) {
 	utils.SendJSON(w, http.StatusOK, "ok")
 }
 
+// UpdateImage godoc
+// @Summary Update image
+// @Description Update image
+// @Tags images
+// @Accept json
+// @Produce json
+// @Param id path string true "Image ID" format(uuid)
+// @Param request body dto.UpdateImageRequest true "Image to update"
+// @Success 200 {object} dto.ImageResponse "Image updated successfully"
+// @Failure 400 {object} utils.ErrorResponse "Invalid request payload or image ID"
+// @Failure 404 {object} utils.ErrorResponse "Image not found"
+// @Failure 500 {object} utils.ErrorResponse "Internal server error"
+// @Router /images/{id} [put]
 func (h ImageHandler) UpdateImage(w http.ResponseWriter, r *http.Request) {
 	id, err := uuid.Parse(chi.URLParam(r, "id"))
 	if err != nil {
@@ -131,6 +179,16 @@ func (h ImageHandler) UpdateImage(w http.ResponseWriter, r *http.Request) {
 	utils.SendJSON(w, http.StatusOK, "ok")
 }
 
+// DeleteImage godoc
+// @Summary Delete image
+// @Description Delete image by ID
+// @Tags images
+// @Param id path string true "User ID" format(uuid)
+// @Success 200 "Image deleted successfully"
+// @Failure 400 {object} utils.ErrorResponse "Invalid image ID"
+// @Failure 404 {object} utils.ErrorResponse "Image not found"
+// @Failure 500 {object} utils.ErrorResponse "Internal server error"
+// @Router /images/{id} [delete]
 func (h ImageHandler) DeleteImage(w http.ResponseWriter, r *http.Request) {
 	id, err := uuid.Parse(chi.URLParam(r, "id"))
 	if err != nil {

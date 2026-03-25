@@ -1,6 +1,7 @@
 #!/bin/bash
 
 mkdir -p ./api/
+mkdir -p ./docs/
 mkdir -p ./cmd/shop/
 mkdir -p ./internal/config/
 mkdir -p ./internal/domain/models/

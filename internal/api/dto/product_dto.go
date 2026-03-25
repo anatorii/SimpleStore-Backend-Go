@@ -10,8 +10,8 @@ import (
 type CreateProductRequest struct {
 	Name           string    `json:"name" validate:"required,min=3,max=255"`
 	Category       string    `json:"category" validate:"required,min=3,max=255"`
-	Price          float32   `json:"price" validate:"required,float"`
-	AvailableStock int       `json:"available_stock" validate:"required,integer,min=1,max=1000000000"`
+	Price          float32   `json:"price" validate:"required,float,gt=0"`
+	AvailableStock int       `json:"available_stock" validate:"required,integer,gte=0"`
 	LastUpdateDate time.Time `json:"last_update_date" validate:"omitempty,date"`
 	SupplierId     uuid.UUID `json:"supplier_id" validate:"omitempty,uuid"`
 	ImageId        uuid.UUID `json:"image_id" validate:"omitempty,uuid"`
