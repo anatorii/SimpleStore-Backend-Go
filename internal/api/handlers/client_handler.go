@@ -102,7 +102,7 @@ func (h ClientHandler) UpdateClientAddress(w http.ResponseWriter, r *http.Reques
 
 	client, err := h.clientService.GetById(r.Context(), id)
 	if err != nil {
-		utils.SendError(w, http.StatusBadRequest, "Client not found")
+		utils.SendError(w, http.StatusNotFound, "Client not found")
 		return
 	}
 

@@ -98,7 +98,7 @@ func (h SupplierHandler) UpdateSupplierAddress(w http.ResponseWriter, r *http.Re
 
 	supplier, err := h.supplierService.GetById(r.Context(), id)
 	if err != nil {
-		utils.SendError(w, http.StatusBadRequest, "Supplier not found")
+		utils.SendError(w, http.StatusNotFound, "Supplier not found")
 		return
 	}
 

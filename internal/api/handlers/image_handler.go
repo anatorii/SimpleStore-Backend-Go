@@ -111,7 +111,7 @@ func (h ImageHandler) UpdateImage(w http.ResponseWriter, r *http.Request) {
 
 	image, err := h.imageService.GetById(r.Context(), id)
 	if err != nil {
-		utils.SendError(w, http.StatusBadRequest, "Image not found")
+		utils.SendError(w, http.StatusNotFound, "Image not found")
 		return
 	}
 
