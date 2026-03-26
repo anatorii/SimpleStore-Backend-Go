@@ -55,7 +55,7 @@ func RegisterHooks(lc fx.Lifecycle, server *http.Server) {
 	lc.Append(fx.Hook{
 		OnStart: func(ctx context.Context) error {
 			go func() {
-				fmt.Printf("Server starting on port %s", server.Addr)
+				fmt.Printf("Server starting on port %s\n", server.Addr)
 				if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 					fmt.Println("Server failed: ", err.Error())
 				}

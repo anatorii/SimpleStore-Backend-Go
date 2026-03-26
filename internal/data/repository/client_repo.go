@@ -18,15 +18,18 @@ func NewClientRepo(db *sqlx.DB) ClientRepo {
 }
 
 func (r *clientRepo) GetAll(ctx context.Context) ([]*models.Client, error) {
-	var models []*models.Client
+	var clients []*models.Client
 	query := `select id, client_name, client_surname, birthday, 
 			         gender, registration_date, address_id
 			  from clients`
-	err := r.db.SelectContext(ctx, models, query)
+
+	// err := r.db.SelectContext(ctx, &clients, query)
+	err := r.db.Select(&clients, query)
 	if err != nil {
 		return nil, err
 	}
-	return models, nil
+
+	return clients, nil
 }
 
 func (r *clientRepo) GetById(ctx context.Context, id uuid.UUID) (*models.Client, error) {

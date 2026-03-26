@@ -38,8 +38,8 @@ func NewPostgres(cfg Config) (*sqlx.DB, error) {
 		return nil, fmt.Errorf("failed to connect to database: %w", err)
 	}
 
-	db.SetMaxOpenConns(25)
-	db.SetMaxIdleConns(25)
+	db.SetMaxOpenConns(55)
+	db.SetMaxIdleConns(55)
 	db.SetConnMaxLifetime(5 * time.Minute)
 
 	if err := db.Ping(); err != nil {
@@ -49,6 +49,4 @@ func NewPostgres(cfg Config) (*sqlx.DB, error) {
 	fmt.Println("Successfully connected to database")
 
 	return db, nil
-
-	// return nil, nil
 }
