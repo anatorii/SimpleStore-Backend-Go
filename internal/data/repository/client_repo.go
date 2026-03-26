@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"errors"
+	"fmt"
 	"storeapi/internal/domain/models"
 
 	"github.com/google/uuid"
@@ -38,7 +39,8 @@ func (r *clientRepo) GetById(ctx context.Context, id uuid.UUID) (*models.Client,
 	                 gender, registration_date, address_id
 			  from clients
 			  where id = $1`
-	err := r.db.GetContext(ctx, &model, query, id)
+	// err := r.db.GetContext(ctx, &model, query, id)
+	err := r.db.Get(&model, query, id)
 	if err != nil {
 		return nil, err
 	}
@@ -62,9 +64,10 @@ func (r *clientRepo) Create(ctx context.Context, model *models.Client) error {
 	query := `insert into clients (client_name, client_surname, birthday,
 			                       gender, registration_date, address_id)
 			  values ($1, $2, $3, $4, $5, $6)`
-	_, err := r.db.ExecContext(ctx, query,
+	result, err := r.db.ExecContext(ctx, query,
 		model.ClientName, model.ClientSurname, model.Birthday,
 		model.Gender, model.RegistrationDate, model.AddressId)
+	fmt.Println(result.LastInsertId())
 	return err
 }
 

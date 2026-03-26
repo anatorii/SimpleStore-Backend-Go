@@ -7,12 +7,12 @@ import (
 )
 
 type Product struct {
-	Id             uuid.UUID
-	Name           string
-	Category       string
-	Price          float32
-	AvailableStock int
-	LastUpdateDate time.Time
-	SupplierId     uuid.UUID
-	ImageId        uuid.UUID
+	Id             uuid.UUID `db:"id"`
+	Name           string    `db:"name"`
+	Category       string    `db:"category"`
+	Price          float32   `db:"price"`
+	AvailableStock int       `db:"available_stock"`
+	LastUpdateDate time.Time `db:"last_update_date"`
+	SupplierId     uuid.UUID `db:"supplier_id"`
+	ImageId        uuid.UUID `db:"image_id"`
 }

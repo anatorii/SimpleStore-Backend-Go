@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"storeapi/internal/api/dto"
 	"storeapi/internal/domain/models"
@@ -91,7 +92,7 @@ func (h ClientHandler) CreateClient(w http.ResponseWriter, r *http.Request) {
 	var request dto.CreateClientRequest
 	err := json.NewDecoder(r.Body).Decode(&request)
 	if err != nil {
-		utils.SendError(w, http.StatusBadRequest, "Invalid request payload")
+		utils.SendError(w, http.StatusBadRequest, fmt.Sprintf("Invalid request payload: %s", err.Error()))
 		return
 	}
 
@@ -103,9 +104,9 @@ func (h ClientHandler) CreateClient(w http.ResponseWriter, r *http.Request) {
 	client := models.Client{
 		ClientName:       request.ClientName,
 		ClientSurname:    request.ClientSurname,
-		Birthday:         request.Birthday,
+		Birthday:         request.GetBirthday(),
 		Gender:           request.Gender,
-		RegistrationDate: request.RegistrationDate,
+		RegistrationDate: request.GetRegistrationDate(),
 		AddressId:        request.AddressId,
 	}
 	err = h.clientService.Create(r.Context(), &client)
