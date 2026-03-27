@@ -12,9 +12,9 @@ import (
 type CreateClientRequest struct {
 	ClientName       string    `json:"client_name" validate:"required,min=1,max=100"`
 	ClientSurname    string    `json:"client_surname" validate:"required,min=1,max=100"`
-	Birthday         string    `json:"birthday" validate:"required, datetime=2006-01-02"`
+	Birthday         string    `json:"birthday" validate:"required,datetime=2006-01-02"`
 	Gender           string    `json:"gender" validate:"required,oneof=M F"`
-	RegistrationDate string    `json:"registration_date" validate:"required, datetime=2006-01-02"`
+	RegistrationDate string    `json:"registration_date" validate:"required,datetime=2006-01-02"`
 	AddressId        uuid.UUID `json:"address_id" validate:"omitempty"`
 }
 
