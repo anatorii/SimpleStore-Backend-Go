@@ -59,15 +59,21 @@ func (h ClientHandler) GetAllClients(w http.ResponseWriter, r *http.Request) {
 // @Failure 500 {object} utils.ErrorResponse "Internal server error"
 // @Router /clients/{name}/{surname} [get]
 func (h ClientHandler) GetClientByName(w http.ResponseWriter, r *http.Request) {
-	name := chi.URLParam(r, "name")
-	surname := chi.URLParam(r, "surname")
-	if name == "" || surname == "" {
+	fname := models.FullName{
+		Name:    chi.URLParam(r, "name"),
+		Surname: chi.URLParam(r, "surname"),
+	}
+	if fname.Name == "" || fname.Surname == "" {
 		utils.SendError(w, http.StatusBadRequest, "Name or surname are not specified")
 		return
 	}
 
-	client, err := h.clientService.GetByName(r.Context(), models.FullName{Name: name, Surname: surname})
+	client, err := h.clientService.GetByName(r.Context(), fname)
 	if err != nil {
+		utils.SendError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+	if client == nil {
 		utils.SendError(w, http.StatusNotFound, "Client not found")
 		return
 	}
@@ -84,7 +90,7 @@ func (h ClientHandler) GetClientByName(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce json
 // @Param request body dto.CreateClientRequest true "Client data"
-// @Success 200 {object} dto.ClientResponse "Client created successfully"
+// @Success 200 "Client created successfully"
 // @Failure 400 {object} utils.ErrorResponse "Invalid request payload or validation error"
 // @Failure 500 {object} utils.ErrorResponse "Internal server error"
 // @Router /clients [post]
@@ -115,7 +121,7 @@ func (h ClientHandler) CreateClient(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.SendJSON(w, http.StatusOK, "ok")
+	utils.SendJSON(w, http.StatusOK, "Client created successfully")
 }
 
 // UpdateClientAddress godoc
@@ -126,11 +132,11 @@ func (h ClientHandler) CreateClient(w http.ResponseWriter, r *http.Request) {
 // @Produce json
 // @Param id path string true "Client ID" format(uuid)
 // @Param request body dto.UpdateClientAddressRequest true "Client address to update"
-// @Success 200 {object} dto.ClientResponse "Client address updated successfully"
+// @Success 200 "Client address updated successfully"
 // @Failure 400 {object} utils.ErrorResponse "Invalid request payload or client ID"
 // @Failure 404 {object} utils.ErrorResponse "Client not found"
 // @Failure 500 {object} utils.ErrorResponse "Internal server error"
-// @Router /clients/{id} [put]
+// @Router /clients/{id} [patch]
 func (h ClientHandler) UpdateClientAddress(w http.ResponseWriter, r *http.Request) {
 	id, err := uuid.Parse(chi.URLParam(r, "id"))
 	if err != nil {
@@ -144,15 +150,18 @@ func (h ClientHandler) UpdateClientAddress(w http.ResponseWriter, r *http.Reques
 		utils.SendError(w, http.StatusBadRequest, "Invalid request payload")
 		return
 	}
-
-	client, err := h.clientService.GetById(r.Context(), id)
-	if err != nil {
-		utils.SendError(w, http.StatusNotFound, "Client not found")
+	if err := h.validate.Struct(request); err != nil {
+		utils.SendError(w, http.StatusBadRequest, err.Error())
 		return
 	}
 
-	if err := h.validate.Struct(request); err != nil {
-		utils.SendError(w, http.StatusBadRequest, err.Error())
+	client, err := h.clientService.GetById(r.Context(), id)
+	if err != nil {
+		utils.SendError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+	if client == nil {
+		utils.SendError(w, http.StatusNotFound, "Client not found")
 		return
 	}
 
@@ -163,7 +172,7 @@ func (h ClientHandler) UpdateClientAddress(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	utils.SendJSON(w, http.StatusOK, "ok")
+	utils.SendJSON(w, http.StatusOK, "Client address updated successfully")
 }
 
 // DeleteClient godoc
@@ -193,5 +202,5 @@ func (h ClientHandler) DeleteClient(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.SendJSON(w, http.StatusOK, "ok")
+	utils.SendJSON(w, http.StatusOK, "Client deleted successfully")
 }

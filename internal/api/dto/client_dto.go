@@ -18,10 +18,6 @@ type CreateClientRequest struct {
 	AddressId        uuid.UUID `json:"address_id" validate:"omitempty"`
 }
 
-type UpdateClientAddressRequest struct {
-	AddressId string `json:"address_id" validate:"required"`
-}
-
 type ClientResponse struct {
 	Id               uuid.UUID `json:"id"`
 	ClientName       string    `json:"client_name"`
