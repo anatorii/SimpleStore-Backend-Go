@@ -13,6 +13,7 @@ type ClientService interface {
 	GetByName(ctx context.Context, fullname models.FullName) (*models.Client, error)
 	Create(ctx context.Context, model *models.Client) error
 	Update(ctx context.Context, model *models.Client) error
+	UpdateAddress(ctx context.Context, model *models.Client, address models.Address) error
 	Delete(ctx context.Context, id uuid.UUID) error
 }
 
@@ -21,6 +22,7 @@ type SupplierService interface {
 	GetById(ctx context.Context, id uuid.UUID) (*models.Supplier, error)
 	Create(ctx context.Context, model *models.Supplier) error
 	Update(ctx context.Context, model *models.Supplier) error
+	UpdateAddress(ctx context.Context, model *models.Supplier, address models.Address) error
 	Delete(ctx context.Context, id uuid.UUID) error
 }
 

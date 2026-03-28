@@ -85,7 +85,7 @@ func (r *Router) SetupRoutes() http.Handler {
 			ch.Get("/", r.ProductHandler.GetAllProducts)
 			ch.Get("/{id}", r.ProductHandler.GetProductById)
 			ch.Post("/", r.ProductHandler.CreateProduct)
-			ch.Patch("/{id}/decrease", r.ProductHandler.UpdateProductAvailable)
+			ch.Patch("/{id}/available", r.ProductHandler.UpdateProductAvailable)
 			ch.Delete("/{id}", r.ProductHandler.DeleteProduct)
 		})
 

@@ -7,6 +7,14 @@ import (
 	"github.com/google/uuid"
 )
 
+type AddressRepo interface {
+	GetById(ctx context.Context, id uuid.UUID) (*models.Address, error)
+	GetByAddress(ctx context.Context, country, city, street string) (*models.Address, error)
+	Create(ctx context.Context, model *models.Address) error
+	Update(ctx context.Context, model *models.Address) error
+	Delete(ctx context.Context, id uuid.UUID) error
+}
+
 type ClientRepo interface {
 	GetAll(ctx context.Context) ([]*models.Client, error)
 	GetById(ctx context.Context, id uuid.UUID) (*models.Client, error)

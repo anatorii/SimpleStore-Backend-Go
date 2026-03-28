@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"database/sql"
 	"errors"
 	"storeapi/internal/domain/models"
 
@@ -9,44 +10,63 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-type AddressRepo struct {
+type addressRepo struct {
 	db *sqlx.DB
 }
 
-func NewAddressRepo(db *sqlx.DB) *AddressRepo {
-	return &AddressRepo{db: db}
+func NewAddressRepo(db *sqlx.DB) AddressRepo {
+	return &addressRepo{db: db}
 }
 
-func (r *AddressRepo) GetById(ctx context.Context, id uuid.UUID) (*models.Address, error) {
+func (r *addressRepo) GetById(ctx context.Context, id uuid.UUID) (*models.Address, error) {
 	var model models.Address
-	query := `select id, coutry, city, street
-			  from addresses where id = $1`
-	err := r.db.GetContext(ctx, &model, query, id)
+	query := `select id, country, city, street
+			  from addresses
+			  where id = $1`
+	err := r.db.Get(&model, query, id)
 	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, nil
+		}
 		return nil, err
 	}
 	return &model, nil
 }
 
-func (r *AddressRepo) Create(ctx context.Context, model *models.Address) error {
-	query := `insert into addresses (coutry, city, street)
+func (r *addressRepo) GetByAddress(ctx context.Context, country, city, street string) (*models.Address, error) {
+	var model models.Address
+	query := `select id, country, city, street
+			  from addresses
+			  where country = $1 and city = $2 and street = $3`
+	err := r.db.Get(&model, query, country, city, street)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, nil
+		}
+		return nil, err
+	}
+	return &model, nil
+}
+
+func (r *addressRepo) Create(ctx context.Context, model *models.Address) error {
+	query := `insert into addresses (country, city, street)
 			  values ($1, $2, $3)`
-	_, err := r.db.ExecContext(ctx, query,
+	_, err := r.db.Exec(query,
 		model.Country, model.City, model.Street)
 	return err
 }
 
-func (r *AddressRepo) Update(ctx context.Context, model *models.Address) error {
-	query := `update addresses set coutry = $1, city = $2, street = $3
+func (r *addressRepo) Update(ctx context.Context, model *models.Address) error {
+	query := `update addresses set country = $1, city = $2, street = $3
 			  where id = $4`
-	_, err := r.db.ExecContext(ctx, query,
+	_, err := r.db.Exec(query,
 		model.Country, model.City, model.Street, model.Id)
 	return err
 }
 
-func (r *AddressRepo) Delete(ctx context.Context, id uuid.UUID) error {
+func (r *addressRepo) Delete(ctx context.Context, id uuid.UUID) error {
 	query := `delete from addresses where id = $1`
-	result, err := r.db.ExecContext(ctx, query, id)
+	result, err := r.db.Exec(query, id)
 	if err != nil {
 		return err
 	}

@@ -22,7 +22,7 @@ func (r *productRepo) GetAll(ctx context.Context) ([]*models.Product, error) {
 	query := `select id, name, category, price,
 					 available_stock, last_update_date, supplier_id, image_id
 			  from products`
-	err := r.db.SelectContext(ctx, models, query)
+	err := r.db.Select(&models, query)
 	if err != nil {
 		return nil, err
 	}
@@ -35,7 +35,7 @@ func (r *productRepo) GetById(ctx context.Context, id uuid.UUID) (*models.Produc
 					 available_stock, last_update_date, supplier_id, image_id
 			  from products
 			  where id = $1`
-	err := r.db.GetContext(ctx, &model, query, id)
+	err := r.db.Get(&model, query, id)
 	if err != nil {
 		return nil, err
 	}
@@ -46,8 +46,19 @@ func (r *productRepo) Create(ctx context.Context, model *models.Product) error {
 	query := `insert into products (name, category, price,
 									available_stock, last_update_date, supplier_id, image_id)
 			  values ($1, $2, $3, $4, $5, $6, $7)`
-	_, err := r.db.ExecContext(ctx, query, model.Name, model.Category, model.Price,
-		model.AvailableStock, model.LastUpdateDate, model.SupplierId, model.ImageId)
+
+	SupplierId := uuid.NullUUID{Valid: false}
+	if model.SupplierId != uuid.Nil {
+		SupplierId = uuid.NullUUID{UUID: model.SupplierId, Valid: true}
+	}
+
+	ImageId := uuid.NullUUID{Valid: false}
+	if model.ImageId != uuid.Nil {
+		ImageId = uuid.NullUUID{UUID: model.ImageId, Valid: true}
+	}
+
+	_, err := r.db.Exec(query, model.Name, model.Category, model.Price,
+		model.AvailableStock, model.LastUpdateDate, SupplierId, ImageId)
 	return err
 }
 
@@ -59,23 +70,44 @@ func (r *productRepo) Update(ctx context.Context, model *models.Product) error {
 				available_stock = $4,
 				last_update_date = $5,
 				supplier_id = $6,
-				image_id = $7,
+				image_id = $7
 			  where id = $8`
-	_, err := r.db.ExecContext(ctx, query,
+
+	SupplierId := uuid.NullUUID{Valid: false}
+	if model.SupplierId != uuid.Nil {
+		SupplierId = uuid.NullUUID{UUID: model.SupplierId, Valid: true}
+	}
+
+	ImageId := uuid.NullUUID{Valid: false}
+	if model.ImageId != uuid.Nil {
+		ImageId = uuid.NullUUID{UUID: model.ImageId, Valid: true}
+	}
+
+	result, err := r.db.Exec(query,
 		model.Name,
 		model.Category,
 		model.Price,
 		model.AvailableStock,
 		model.LastUpdateDate,
-		model.SupplierId,
-		model.ImageId,
+		SupplierId,
+		ImageId,
 		model.Id)
-	return err
+	if err != nil {
+		return err
+	}
+	cnt, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if cnt == 0 {
+		return errors.New("NO_AFFECTED")
+	}
+	return nil
 }
 
 func (r *productRepo) Delete(ctx context.Context, id uuid.UUID) error {
 	query := `delete from products where id = $1`
-	result, err := r.db.ExecContext(ctx, query, id)
+	result, err := r.db.Exec(query, id)
 	if err != nil {
 		return err
 	}

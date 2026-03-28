@@ -125,13 +125,13 @@ func (h ClientHandler) CreateClient(w http.ResponseWriter, r *http.Request) {
 }
 
 // UpdateClientAddress godoc
-// @Summary Update client
+// @Summary Update client address
 // @Description Update client address
 // @Tags clients
 // @Accept json
 // @Produce json
-// @Param id path string true "Client ID" format(uuid)
-// @Param request body dto.UpdateClientAddressRequest true "Client address to update"
+// @Param id path string true "Client Id" format(uuid)
+// @Param request body dto.UpdateAddressRequest true "Client address to update"
 // @Success 200 "Client address updated successfully"
 // @Failure 400 {object} utils.ErrorResponse "Invalid request payload or client ID"
 // @Failure 404 {object} utils.ErrorResponse "Client not found"
@@ -140,11 +140,11 @@ func (h ClientHandler) CreateClient(w http.ResponseWriter, r *http.Request) {
 func (h ClientHandler) UpdateClientAddress(w http.ResponseWriter, r *http.Request) {
 	id, err := uuid.Parse(chi.URLParam(r, "id"))
 	if err != nil {
-		utils.SendError(w, http.StatusBadRequest, "Id is not specified")
+		utils.SendError(w, http.StatusBadRequest, "Invalid client ID")
 		return
 	}
 
-	var request dto.UpdateClientAddressRequest
+	var request dto.UpdateAddressRequest
 	err = json.NewDecoder(r.Body).Decode(&request)
 	if err != nil {
 		utils.SendError(w, http.StatusBadRequest, "Invalid request payload")
@@ -165,8 +165,12 @@ func (h ClientHandler) UpdateClientAddress(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	client.AddressId, _ = uuid.Parse(request.AddressId)
-	err = h.clientService.Update(r.Context(), client)
+	address := models.Address{
+		Country: request.Country,
+		City:    request.City,
+		Street:  request.Street,
+	}
+	err = h.clientService.UpdateAddress(r.Context(), client, address)
 	if err != nil {
 		utils.SendError(w, http.StatusInternalServerError, err.Error())
 		return
@@ -188,7 +192,7 @@ func (h ClientHandler) UpdateClientAddress(w http.ResponseWriter, r *http.Reques
 func (h ClientHandler) DeleteClient(w http.ResponseWriter, r *http.Request) {
 	id, err := uuid.Parse(chi.URLParam(r, "id"))
 	if err != nil {
-		utils.SendError(w, http.StatusBadRequest, "Id is not specified")
+		utils.SendError(w, http.StatusBadRequest, "Invalid client Id")
 		return
 	}
 

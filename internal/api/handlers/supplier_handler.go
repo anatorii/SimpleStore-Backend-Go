@@ -46,21 +46,20 @@ func (h SupplierHandler) GetAllSuppliers(w http.ResponseWriter, r *http.Request)
 }
 
 // GetSupplier godoc
-// @Summary Get supplier by name and surname
-// @Description Get supplier details by name and surname
+// @Summary Get supplier by id
+// @Description Get supplier details by id
 // @Tags suppliers
 // @Produce json
-// @Param name path string true "name" format(string)
-// @Param surname path string true "surname" format(string)
+// @Param id path string true "Supplier Id" format(uuid)
 // @Success 200 {object} dto.SupplierResponse "Supplier found"
-// @Failure 400 {object} utils.ErrorResponse "Name or surname are not specified"
+// @Failure 400 {object} utils.ErrorResponse "Invalid supplier Id"
 // @Failure 404 {object} utils.ErrorResponse "Supplier not found"
 // @Failure 500 {object} utils.ErrorResponse "Internal server error"
-// @Router /suppliers/{name}/{surname} [get]
+// @Router /suppliers/{id} [get]
 func (h SupplierHandler) GetSupplierById(w http.ResponseWriter, r *http.Request) {
 	id, err := uuid.Parse(chi.URLParam(r, "id"))
 	if err != nil {
-		utils.SendError(w, http.StatusBadRequest, "Id is not specified")
+		utils.SendError(w, http.StatusBadRequest, "Invalid supplier Id")
 		return
 	}
 
@@ -110,55 +109,62 @@ func (h SupplierHandler) CreateSupplier(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	utils.SendJSON(w, http.StatusOK, "ok")
+	utils.SendJSON(w, http.StatusOK, "Supplier created successfully")
 }
 
 // UpdateSupplierAddress godoc
-// @Summary Update supplier
+// @Summary Update supplier address
 // @Description Update supplier address
 // @Tags suppliers
 // @Accept json
 // @Produce json
-// @Param id path string true "Supplier ID" format(uuid)
-// @Param request body dto.UpdateSupplierAddressRequest true "Supplier address to update"
+// @Param id path string true "Supplier Id" format(uuid)
+// @Param request body dto.UpdateAddressRequest true "Supplier address to update"
 // @Success 200 {object} dto.SupplierResponse "Supplier address updated successfully"
-// @Failure 400 {object} utils.ErrorResponse "Invalid request payload or supplier ID"
+// @Failure 400 {object} utils.ErrorResponse "Invalid request payload or supplier Id"
 // @Failure 404 {object} utils.ErrorResponse "Supplier not found"
 // @Failure 500 {object} utils.ErrorResponse "Internal server error"
-// @Router /suppliers/{id} [put]
+// @Router /suppliers/{id} [patch]
 func (h SupplierHandler) UpdateSupplierAddress(w http.ResponseWriter, r *http.Request) {
 	id, err := uuid.Parse(chi.URLParam(r, "id"))
 	if err != nil {
-		utils.SendError(w, http.StatusBadRequest, "Id is not specified")
+		utils.SendError(w, http.StatusBadRequest, "Invalid supplier Id")
 		return
 	}
 
-	var request dto.UpdateSupplierAddressRequest
+	var request dto.UpdateAddressRequest
 	err = json.NewDecoder(r.Body).Decode(&request)
 	if err != nil {
 		utils.SendError(w, http.StatusBadRequest, "Invalid request payload")
 		return
 	}
-
-	supplier, err := h.supplierService.GetById(r.Context(), id)
-	if err != nil {
-		utils.SendError(w, http.StatusNotFound, "Supplier not found")
-		return
-	}
-
 	if err := h.validate.Struct(request); err != nil {
 		utils.SendError(w, http.StatusBadRequest, err.Error())
 		return
 	}
 
-	supplier.AddressId, _ = uuid.Parse(request.AddressId)
-	err = h.supplierService.Update(r.Context(), supplier)
+	supplier, err := h.supplierService.GetById(r.Context(), id)
+	if err != nil {
+		utils.SendError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+	if supplier == nil {
+		utils.SendError(w, http.StatusNotFound, "Supplier not found")
+		return
+	}
+
+	address := models.Address{
+		Country: request.Country,
+		City:    request.City,
+		Street:  request.Street,
+	}
+	err = h.supplierService.UpdateAddress(r.Context(), supplier, address)
 	if err != nil {
 		utils.SendError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	utils.SendJSON(w, http.StatusOK, "ok")
+	utils.SendJSON(w, http.StatusOK, "Supplier address updated successfully")
 }
 
 // DeleteSupplier godoc
@@ -167,14 +173,14 @@ func (h SupplierHandler) UpdateSupplierAddress(w http.ResponseWriter, r *http.Re
 // @Tags suppliers
 // @Param id path string true "User ID" format(uuid)
 // @Success 200 "Supplier deleted successfully"
-// @Failure 400 {object} utils.ErrorResponse "Invalid supplier ID"
+// @Failure 400 {object} utils.ErrorResponse "Invalid supplier Id"
 // @Failure 404 {object} utils.ErrorResponse "Supplier not found"
 // @Failure 500 {object} utils.ErrorResponse "Internal server error"
 // @Router /suppliers/{id} [delete]
 func (h SupplierHandler) DeleteSupplier(w http.ResponseWriter, r *http.Request) {
 	id, err := uuid.Parse(chi.URLParam(r, "id"))
 	if err != nil {
-		utils.SendError(w, http.StatusBadRequest, "Id is not specified")
+		utils.SendError(w, http.StatusBadRequest, "Invalid supplier Id")
 		return
 	}
 
@@ -188,5 +194,5 @@ func (h SupplierHandler) DeleteSupplier(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	utils.SendJSON(w, http.StatusOK, "ok")
+	utils.SendJSON(w, http.StatusOK, "Supplier deleted successfully")
 }

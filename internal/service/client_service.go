@@ -10,11 +10,12 @@ import (
 )
 
 type clientService struct {
-	repo repository.ClientRepo
+	repo     repository.ClientRepo
+	addrRepo repository.AddressRepo
 }
 
-func NewClientService(repo repository.ClientRepo) ClientService {
-	return &clientService{repo: repo}
+func NewClientService(repo repository.ClientRepo, addrRepo repository.AddressRepo) ClientService {
+	return &clientService{repo: repo, addrRepo: addrRepo}
 }
 
 func (s *clientService) GetAll(ctx context.Context) ([]*models.Client, error) {
@@ -58,6 +59,31 @@ func (s *clientService) Update(ctx context.Context, model *models.Client) error 
 		return fmt.Errorf("failed to update client: %w", err)
 	}
 	return nil
+}
+
+func (s *clientService) UpdateAddress(ctx context.Context, model *models.Client, address models.Address) error {
+
+	var addr *models.Address
+	var err error
+	addr, err = s.addrRepo.GetByAddress(ctx, address.Country, address.City, address.Street)
+	if err != nil {
+		return fmt.Errorf("failed to update client address (get): %w", err)
+	}
+	if addr == nil {
+		err = s.addrRepo.Create(ctx, &address)
+		if err != nil {
+			return fmt.Errorf("failed to update client address (create): %w", err)
+		}
+		addr, err = s.addrRepo.GetByAddress(ctx, address.Country, address.City, address.Street)
+		if err != nil {
+			return fmt.Errorf("failed to update client address (get again): %w", err)
+		}
+	}
+	fmt.Println(model)
+	fmt.Println(addr)
+
+	model.AddressId = addr.Id
+	return s.Update(ctx, model)
 }
 
 func (s *clientService) Delete(ctx context.Context, id uuid.UUID) error {

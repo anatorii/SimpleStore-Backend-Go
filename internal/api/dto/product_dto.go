@@ -10,23 +10,23 @@ import (
 type CreateProductRequest struct {
 	Name           string    `json:"name" validate:"required,min=3,max=255"`
 	Category       string    `json:"category" validate:"required,min=3,max=255"`
-	Price          float32   `json:"price" validate:"required,float,gt=0"`
-	AvailableStock int       `json:"available_stock" validate:"required,integer,gte=0"`
-	LastUpdateDate time.Time `json:"last_update_date" validate:"omitempty,date"`
-	SupplierId     uuid.UUID `json:"supplier_id" validate:"omitempty,uuid"`
-	ImageId        uuid.UUID `json:"image_id" validate:"omitempty,uuid"`
+	Price          float64   `json:"price" validate:"required,gt=0"`
+	AvailableStock int       `json:"available_stock" validate:"required,gte=0"`
+	LastUpdateDate string    `json:"last_update_date" validate:"required,datetime=2006-01-02"`
+	SupplierId     uuid.UUID `json:"supplier_id" validate:"omitempty"`
+	ImageId        uuid.UUID `json:"image_id" validate:"omitempty"`
 }
 
 type UpdateProductAvailableRequest struct {
-	AvailableStock int `json:"available_stock" validate:"required,integer,min=1,max=1000000000"`
+	AvailableStock int `json:"available_stock" validate:"required,gte=0"`
 }
 
 type ProductResponse struct {
 	Id             uuid.UUID `json:"id"`
 	Name           string    `json:"name"`
-	Price          float32   `json:"price"`
+	Price          float64   `json:"price"`
 	AvailableStock int       `json:"available_stock"`
-	LastUpdateDate time.Time `json:"last_update_date"`
+	LastUpdateDate string    `json:"last_update_date"`
 	SupplierId     uuid.UUID `json:"supplier_id"`
 	ImageId        uuid.UUID `json:"image_id"`
 	CreatedAt      time.Time `json:"created_at"`
@@ -39,26 +39,31 @@ func ModelToProductResponse(m *models.Product) *ProductResponse {
 		Name:           m.Name,
 		Price:          m.Price,
 		AvailableStock: m.AvailableStock,
-		LastUpdateDate: m.LastUpdateDate,
+		LastUpdateDate: m.LastUpdateDate.Format("2006-01-02"),
 		SupplierId:     m.SupplierId,
 		ImageId:        m.ImageId,
 	}
 	return &r
 }
 
-func ModelToProductResponseList(m []*models.Product) []*ProductResponse {
+func ModelToProductResponseList(lm []*models.Product) []*ProductResponse {
 	l := make([]*ProductResponse, 0)
-	for _, v := range m {
+	for _, m := range lm {
 		r := ProductResponse{
-			Id:             v.Id,
-			Name:           v.Name,
-			Price:          v.Price,
-			AvailableStock: v.AvailableStock,
-			LastUpdateDate: v.LastUpdateDate,
-			SupplierId:     v.SupplierId,
-			ImageId:        v.ImageId,
+			Id:             m.Id,
+			Name:           m.Name,
+			Price:          m.Price,
+			AvailableStock: m.AvailableStock,
+			LastUpdateDate: m.LastUpdateDate.Format("2006-01-02"),
+			SupplierId:     m.SupplierId,
+			ImageId:        m.ImageId,
 		}
 		l = append(l, &r)
 	}
 	return l
+}
+
+func (r *CreateProductRequest) GetLastUpdateDate() time.Time {
+	t, _ := time.Parse("2006-01-02", r.LastUpdateDate)
+	return t
 }

@@ -22,7 +22,7 @@ func (r *imageRepo) GetById(ctx context.Context, id uuid.UUID) (*models.Image, e
 	query := `select id, data, description
 			  from images
 			  where id = $1`
-	err := r.db.GetContext(ctx, &model, query, id)
+	err := r.db.Get(&model, query, id)
 	if err != nil {
 		return nil, err
 	}
@@ -34,7 +34,7 @@ func (r *imageRepo) GetByProductId(ctx context.Context, productId uuid.UUID) (*m
 	query := `select id, data, description
 			  from images
 			  where id = $1`
-	err := r.db.GetContext(ctx, &model, query, productId)
+	err := r.db.Get(&model, query, productId)
 	if err != nil {
 		return nil, err
 	}
@@ -43,19 +43,19 @@ func (r *imageRepo) GetByProductId(ctx context.Context, productId uuid.UUID) (*m
 
 func (r *imageRepo) Create(ctx context.Context, model *models.Image) error {
 	query := `insert into images (data, description) values ($1, $2)`
-	_, err := r.db.ExecContext(ctx, query, model.Data, model.Description)
+	_, err := r.db.Exec(query, model.Data, model.Description)
 	return err
 }
 
 func (r *imageRepo) Update(ctx context.Context, model *models.Image) error {
 	query := `update images set data = $1, description = $2`
-	_, err := r.db.ExecContext(ctx, query, model.Data, model.Description)
+	_, err := r.db.Exec(query, model.Data, model.Description)
 	return err
 }
 
 func (r *imageRepo) Delete(ctx context.Context, id uuid.UUID) error {
 	query := `delete from images where id = $1`
-	result, err := r.db.ExecContext(ctx, query, id)
+	result, err := r.db.Exec(query, id)
 	if err != nil {
 		return err
 	}

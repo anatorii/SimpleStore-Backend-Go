@@ -43,25 +43,23 @@ func (h ProductHandler) GetAllProducts(w http.ResponseWriter, r *http.Request) {
 	var response []*dto.ProductResponse
 	response = dto.ModelToProductResponseList(list)
 	utils.SendJSON(w, http.StatusOK, response)
-
 }
 
 // GetProduct godoc
-// @Summary Get product by name and surname
-// @Description Get product details by name and surname
+// @Summary Get product by id
+// @Description Get product details by id
 // @Tags products
 // @Produce json
-// @Param name path string true "name" format(string)
-// @Param surname path string true "surname" format(string)
+// @Param id path string true "Product Id" format(uuid)
 // @Success 200 {object} dto.ProductResponse "Product found"
-// @Failure 400 {object} utils.ErrorResponse "Name or surname are not specified"
+// @Failure 400 {object} utils.ErrorResponse "Invalid product Id"
 // @Failure 404 {object} utils.ErrorResponse "Product not found"
 // @Failure 500 {object} utils.ErrorResponse "Internal server error"
-// @Router /products/{name}/{surname} [get]
+// @Router /products/{id} [get]
 func (h ProductHandler) GetProductById(w http.ResponseWriter, r *http.Request) {
 	id, err := uuid.Parse(chi.URLParam(r, "id"))
 	if err != nil {
-		utils.SendError(w, http.StatusBadRequest, "Id is not specified")
+		utils.SendError(w, http.StatusBadRequest, "Invalid product Id")
 		return
 	}
 
@@ -83,7 +81,7 @@ func (h ProductHandler) GetProductById(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce json
 // @Param request body dto.CreateProductRequest true "Product data"
-// @Success 200 {object} dto.ProductResponse "Product created successfully"
+// @Success 200 "Product created successfully"
 // @Failure 400 {object} utils.ErrorResponse "Invalid request payload or validation error"
 // @Failure 500 {object} utils.ErrorResponse "Internal server error"
 // @Router /products [post]
@@ -105,7 +103,7 @@ func (h ProductHandler) CreateProduct(w http.ResponseWriter, r *http.Request) {
 		Category:       request.Category,
 		Price:          request.Price,
 		AvailableStock: request.AvailableStock,
-		LastUpdateDate: request.LastUpdateDate,
+		LastUpdateDate: request.GetLastUpdateDate(),
 		SupplierId:     request.SupplierId,
 		ImageId:        request.ImageId,
 	}
@@ -115,26 +113,26 @@ func (h ProductHandler) CreateProduct(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.SendJSON(w, http.StatusOK, "ok")
+	utils.SendJSON(w, http.StatusOK, "Product created successfully")
 }
 
 // UpdateProductAvailable godoc
-// @Summary Update product
-// @Description Update product address
+// @Summary Update product available in stock
+// @Description Update product address available in stock
 // @Tags products
 // @Accept json
 // @Produce json
 // @Param id path string true "Product ID" format(uuid)
 // @Param request body dto.UpdateProductAvailableRequest true "Product available in stock to update"
-// @Success 200 {object} dto.ProductResponse "Product updated successfully"
+// @Success 200 "Product available updated successfully"
 // @Failure 400 {object} utils.ErrorResponse "Invalid request payload or product ID"
 // @Failure 404 {object} utils.ErrorResponse "Product not found"
 // @Failure 500 {object} utils.ErrorResponse "Internal server error"
-// @Router /products/{id} [put]
+// @Router /products/{id}/available [patch]
 func (h ProductHandler) UpdateProductAvailable(w http.ResponseWriter, r *http.Request) {
 	id, err := uuid.Parse(chi.URLParam(r, "id"))
 	if err != nil {
-		utils.SendError(w, http.StatusBadRequest, "Id is not specified")
+		utils.SendError(w, http.StatusBadRequest, "Invalid product ID")
 		return
 	}
 
@@ -163,7 +161,7 @@ func (h ProductHandler) UpdateProductAvailable(w http.ResponseWriter, r *http.Re
 		return
 	}
 
-	utils.SendJSON(w, http.StatusOK, "ok")
+	utils.SendJSON(w, http.StatusOK, "Product available updated successfully")
 }
 
 // DeleteProduct godoc
@@ -172,14 +170,14 @@ func (h ProductHandler) UpdateProductAvailable(w http.ResponseWriter, r *http.Re
 // @Tags products
 // @Param id path string true "User ID" format(uuid)
 // @Success 200 "Product deleted successfully"
-// @Failure 400 {object} utils.ErrorResponse "Invalid product ID"
+// @Failure 400 {object} utils.ErrorResponse "Invalid product Id"
 // @Failure 404 {object} utils.ErrorResponse "Product not found"
 // @Failure 500 {object} utils.ErrorResponse "Internal server error"
 // @Router /products/{id} [delete]
 func (h ProductHandler) DeleteProduct(w http.ResponseWriter, r *http.Request) {
 	id, err := uuid.Parse(chi.URLParam(r, "id"))
 	if err != nil {
-		utils.SendError(w, http.StatusBadRequest, "Id is not specified")
+		utils.SendError(w, http.StatusBadRequest, "Invalid product Id")
 		return
 	}
 
@@ -193,5 +191,5 @@ func (h ProductHandler) DeleteProduct(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.SendJSON(w, http.StatusOK, "ok")
+	utils.SendJSON(w, http.StatusOK, "Product deleted successfully")
 }
