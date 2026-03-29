@@ -21,7 +21,7 @@ func NewClientRepo(db *sqlx.DB) ClientRepo {
 func (r *clientRepo) GetAll(ctx context.Context, limit, offset int) ([]*models.Client, error) {
 	var clients []*models.Client
 	var err error
-	if limit == 0 || offset == 0 {
+	if limit == 0 {
 		query := `select id, client_name, client_surname, birthday, 
 						 gender, registration_date, address_id
 				  from clients`

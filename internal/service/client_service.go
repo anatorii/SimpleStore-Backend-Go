@@ -20,7 +20,7 @@ func NewClientService(repo repository.ClientRepo, addrRepo repository.AddressRep
 
 func (s *clientService) GetAll(ctx context.Context, offset, limit int) ([]*models.Client, error) {
 	if offset < 1 {
-		offset = 1
+		offset = 0
 	}
 	if limit < 1 {
 		limit = 0
