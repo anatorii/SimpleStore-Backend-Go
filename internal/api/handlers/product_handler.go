@@ -89,11 +89,11 @@ func (h ProductHandler) CreateProduct(w http.ResponseWriter, r *http.Request) {
 	var request dto.CreateProductRequest
 	err := json.NewDecoder(r.Body).Decode(&request)
 	if err != nil {
-		utils.SendError(w, http.StatusBadRequest, "Invalid request payload")
+		utils.SendError(w, http.StatusBadRequest, "Invalid json body")
 		return
 	}
 
-	if err := h.validate.Struct(request); err != nil {
+	if err := request.Validate(h.validate); err != nil {
 		utils.SendError(w, http.StatusBadRequest, err.Error())
 		return
 	}
@@ -104,8 +104,8 @@ func (h ProductHandler) CreateProduct(w http.ResponseWriter, r *http.Request) {
 		Price:          request.Price,
 		AvailableStock: request.AvailableStock,
 		LastUpdateDate: request.GetLastUpdateDate(),
-		SupplierId:     request.SupplierId,
-		ImageId:        request.ImageId,
+		SupplierId:     request.GetSupplierId(),
+		ImageId:        request.GetImageId(),
 	}
 	err = h.productService.Create(r.Context(), &product)
 	if err != nil {
@@ -139,7 +139,7 @@ func (h ProductHandler) UpdateProductAvailable(w http.ResponseWriter, r *http.Re
 	var request dto.UpdateProductAvailableRequest
 	err = json.NewDecoder(r.Body).Decode(&request)
 	if err != nil {
-		utils.SendError(w, http.StatusBadRequest, "Invalid request payload")
+		utils.SendError(w, http.StatusBadRequest, "Invalid json body")
 		return
 	}
 
@@ -150,7 +150,7 @@ func (h ProductHandler) UpdateProductAvailable(w http.ResponseWriter, r *http.Re
 	}
 
 	if err := h.validate.Struct(request); err != nil {
-		utils.SendError(w, http.StatusBadRequest, err.Error())
+		utils.SendError(w, http.StatusBadRequest, "Invalid request payload")
 		return
 	}
 

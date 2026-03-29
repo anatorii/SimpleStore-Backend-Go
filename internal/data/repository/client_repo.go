@@ -18,12 +18,21 @@ func NewClientRepo(db *sqlx.DB) ClientRepo {
 	return &clientRepo{db: db}
 }
 
-func (r *clientRepo) GetAll(ctx context.Context) ([]*models.Client, error) {
+func (r *clientRepo) GetAll(ctx context.Context, limit, offset int) ([]*models.Client, error) {
 	var clients []*models.Client
-	query := `select id, client_name, client_surname, birthday, 
+	var err error
+	if limit == 0 || offset == 0 {
+		query := `select id, client_name, client_surname, birthday, 
+						 gender, registration_date, address_id
+				  from clients`
+		err = r.db.Select(&clients, query)
+	} else {
+		query := `select id, client_name, client_surname, birthday, 
 			         gender, registration_date, address_id
-			  from clients`
-	err := r.db.Select(&clients, query)
+			  from clients
+			  limit $1 offset $2`
+		err = r.db.Select(&clients, query, limit, offset)
+	}
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, nil

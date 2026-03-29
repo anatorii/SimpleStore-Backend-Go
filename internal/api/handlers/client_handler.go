@@ -8,6 +8,7 @@ import (
 	"storeapi/internal/domain/models"
 	"storeapi/internal/service"
 	"storeapi/pkg/utils"
+	"strconv"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-playground/validator/v10"
@@ -31,11 +32,16 @@ func NewClientHandler(clientService service.ClientService) *ClientHandler {
 // @Description Get all client
 // @Tags clients
 // @Produce json
+// @Param limit query int false "Limit number of results" default(0) minimum(0)
+// @Param offset query int false "Offset for pagination" default(0) minimum(0)
 // @Success 200 {object} dto.ClientResponse "Clients array"
 // @Failure 500 {object} utils.ErrorResponse "Internal server error"
 // @Router /clients [get]
 func (h ClientHandler) GetAllClients(w http.ResponseWriter, r *http.Request) {
-	list, err := h.clientService.GetAll(r.Context())
+	offset, _ := strconv.Atoi(r.URL.Query().Get("offset"))
+	limit, _ := strconv.Atoi(r.URL.Query().Get("limit"))
+
+	list, err := h.clientService.GetAll(r.Context(), offset, limit)
 	if err != nil {
 		utils.SendError(w, http.StatusInternalServerError, err.Error())
 		return
@@ -102,7 +108,7 @@ func (h ClientHandler) CreateClient(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := h.validate.Struct(request); err != nil {
+	if err := request.Validate(h.validate); err != nil {
 		utils.SendError(w, http.StatusBadRequest, err.Error())
 		return
 	}
@@ -113,7 +119,7 @@ func (h ClientHandler) CreateClient(w http.ResponseWriter, r *http.Request) {
 		Birthday:         request.GetBirthday(),
 		Gender:           request.Gender,
 		RegistrationDate: request.GetRegistrationDate(),
-		AddressId:        request.AddressId,
+		AddressId:        request.GetAddressId(),
 	}
 	err = h.clientService.Create(r.Context(), &client)
 	if err != nil {
@@ -140,7 +146,7 @@ func (h ClientHandler) CreateClient(w http.ResponseWriter, r *http.Request) {
 func (h ClientHandler) UpdateClientAddress(w http.ResponseWriter, r *http.Request) {
 	id, err := uuid.Parse(chi.URLParam(r, "id"))
 	if err != nil {
-		utils.SendError(w, http.StatusBadRequest, "Invalid client ID")
+		utils.SendError(w, http.StatusBadRequest, "Invalid client Id")
 		return
 	}
 

@@ -93,14 +93,14 @@ func (h SupplierHandler) CreateSupplier(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	if err := h.validate.Struct(request); err != nil {
+	if err := request.Validate(h.validate); err != nil {
 		utils.SendError(w, http.StatusBadRequest, err.Error())
 		return
 	}
 
 	supplier := models.Supplier{
 		Name:        request.Name,
-		AddressId:   request.AddressId,
+		AddressId:   request.GetAddressId(),
 		PhoneNumber: request.PhoneNumber,
 	}
 	err = h.supplierService.Create(r.Context(), &supplier)

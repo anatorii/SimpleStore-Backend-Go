@@ -10,12 +10,12 @@ import (
 )
 
 type CreateClientRequest struct {
-	ClientName       string    `json:"client_name" validate:"required,min=1,max=100"`
-	ClientSurname    string    `json:"client_surname" validate:"required,min=1,max=100"`
-	Birthday         string    `json:"birthday" validate:"required,datetime=2006-01-02"`
-	Gender           string    `json:"gender" validate:"required,oneof=M F"`
-	RegistrationDate string    `json:"registration_date" validate:"required,datetime=2006-01-02"`
-	AddressId        uuid.UUID `json:"address_id" validate:"omitempty"`
+	ClientName       string `json:"client_name" validate:"required,min=1,max=100"`
+	ClientSurname    string `json:"client_surname" validate:"required,min=1,max=100"`
+	Birthday         string `json:"birthday" validate:"required,datetime=2006-01-02"`
+	Gender           string `json:"gender" validate:"required,oneof=M F"`
+	RegistrationDate string `json:"registration_date" validate:"required,datetime=2006-01-02"`
+	AddressId        string `json:"address_id" validate:"omitempty"`
 }
 
 type ClientResponse struct {
@@ -65,6 +65,12 @@ func (r *CreateClientRequest) Validate(validate *validator.Validate) error {
 		return err
 	}
 
+	if len(r.AddressId) != 0 {
+		if _, err := uuid.Parse(r.AddressId); err != nil {
+			return fmt.Errorf("Invalid Address Id")
+		}
+	}
+
 	birthday := r.GetBirthday()
 	regDate := r.GetRegistrationDate()
 
@@ -74,19 +80,19 @@ func (r *CreateClientRequest) Validate(validate *validator.Validate) error {
 	// Проверка возраста
 	age := today.Year() - birthday.Year()
 	if age < 18 {
-		return fmt.Errorf("client must be at least 18 years old")
+		return fmt.Errorf("Client must be at least 18 years old")
 	}
 	if age > 120 {
-		return fmt.Errorf("invalid age")
+		return fmt.Errorf("Invalid age")
 	}
 
 	// Проверка даты регистрации
 	if regDate.After(today) {
-		return fmt.Errorf("registration date cannot be in the future")
+		return fmt.Errorf("Registration date cannot be in the future")
 	}
 
 	if regDate.Before(birthday) {
-		return fmt.Errorf("registration date cannot be before birthday")
+		return fmt.Errorf("Registration date cannot be before birthday")
 	}
 
 	return nil
@@ -100,4 +106,9 @@ func (r *CreateClientRequest) GetBirthday() time.Time {
 func (r *CreateClientRequest) GetRegistrationDate() time.Time {
 	t, _ := time.Parse("2006-01-02", r.RegistrationDate)
 	return t
+}
+
+func (r *CreateClientRequest) GetAddressId() uuid.UUID {
+	v, _ := uuid.Parse(r.AddressId)
+	return v
 }

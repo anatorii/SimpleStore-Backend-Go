@@ -16,7 +16,7 @@ type AddressRepo interface {
 }
 
 type ClientRepo interface {
-	GetAll(ctx context.Context) ([]*models.Client, error)
+	GetAll(ctx context.Context, limit, offset int) ([]*models.Client, error)
 	GetById(ctx context.Context, id uuid.UUID) (*models.Client, error)
 	GetByName(ctx context.Context, fullname models.FullName) (*models.Client, error)
 	Create(ctx context.Context, model *models.Client) error

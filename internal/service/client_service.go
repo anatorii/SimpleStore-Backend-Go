@@ -18,8 +18,14 @@ func NewClientService(repo repository.ClientRepo, addrRepo repository.AddressRep
 	return &clientService{repo: repo, addrRepo: addrRepo}
 }
 
-func (s *clientService) GetAll(ctx context.Context) ([]*models.Client, error) {
-	list, err := s.repo.GetAll(ctx)
+func (s *clientService) GetAll(ctx context.Context, offset, limit int) ([]*models.Client, error) {
+	if offset < 1 {
+		offset = 1
+	}
+	if limit < 1 {
+		limit = 0
+	}
+	list, err := s.repo.GetAll(ctx, limit, offset)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get clients: %w", err)
 	}

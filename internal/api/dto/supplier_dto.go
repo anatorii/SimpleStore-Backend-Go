@@ -1,20 +1,18 @@
 package dto
 
 import (
+	"fmt"
 	"storeapi/internal/domain/models"
 	"time"
 
+	"github.com/go-playground/validator/v10"
 	"github.com/google/uuid"
 )
 
 type CreateSupplierRequest struct {
-	Name        string    `json:"name" validate:"required,min=3,max=255"`
-	AddressId   uuid.UUID `json:"address_id" validate:"omitempty,uuid"`
-	PhoneNumber string    `json:"phone_number" validate:"required,min=3,max=255"`
-}
-
-type UpdateSupplierAddressRequest struct {
-	AddressId string `json:"address_id" validate:"required,uuid"`
+	Name        string `json:"name" validate:"required,min=3,max=255"`
+	AddressId   string `json:"address_id" validate:"omitempty,uuid"`
+	PhoneNumber string `json:"phone_number" validate:"required,min=3,max=255"`
 }
 
 type SupplierResponse struct {
@@ -48,4 +46,23 @@ func ModelToSupplierResponseList(m []*models.Supplier) []*SupplierResponse {
 		l = append(l, &r)
 	}
 	return l
+}
+
+func (r *CreateSupplierRequest) Validate(validate *validator.Validate) error {
+	if err := validate.Struct(r); err != nil {
+		return err
+	}
+
+	if len(r.AddressId) != 0 {
+		if _, err := uuid.Parse(r.AddressId); err != nil {
+			return fmt.Errorf("Invalid Address Id")
+		}
+	}
+
+	return nil
+}
+
+func (r *CreateSupplierRequest) GetAddressId() uuid.UUID {
+	v, _ := uuid.Parse(r.AddressId)
+	return v
 }

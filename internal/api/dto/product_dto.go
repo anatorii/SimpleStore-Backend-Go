@@ -1,24 +1,26 @@
 package dto
 
 import (
+	"fmt"
 	"storeapi/internal/domain/models"
 	"time"
 
+	"github.com/go-playground/validator/v10"
 	"github.com/google/uuid"
 )
 
 type CreateProductRequest struct {
-	Name           string    `json:"name" validate:"required,min=3,max=255"`
-	Category       string    `json:"category" validate:"required,min=3,max=255"`
-	Price          float64   `json:"price" validate:"required,gt=0"`
-	AvailableStock int       `json:"available_stock" validate:"required,gte=0"`
-	LastUpdateDate string    `json:"last_update_date" validate:"required,datetime=2006-01-02"`
-	SupplierId     uuid.UUID `json:"supplier_id" validate:"omitempty"`
-	ImageId        uuid.UUID `json:"image_id" validate:"omitempty"`
+	Name           string  `json:"name" validate:"required,min=3,max=255"`
+	Category       string  `json:"category" validate:"required,min=3,max=255"`
+	Price          float64 `json:"price" validate:"gt=0"`
+	AvailableStock int     `json:"available_stock" validate:"gte=0"`
+	LastUpdateDate string  `json:"last_update_date" validate:"required,datetime=2006-01-02"`
+	SupplierId     string  `json:"supplier_id" validate:"omitempty"`
+	ImageId        string  `json:"image_id" validate:"omitempty"`
 }
 
 type UpdateProductAvailableRequest struct {
-	AvailableStock int `json:"available_stock" validate:"required,gte=0"`
+	AvailableStock int `json:"available_stock" validate:"gte=0"`
 }
 
 type ProductResponse struct {
@@ -63,7 +65,37 @@ func ModelToProductResponseList(lm []*models.Product) []*ProductResponse {
 	return l
 }
 
+func (r *CreateProductRequest) Validate(validate *validator.Validate) error {
+	if err := validate.Struct(r); err != nil {
+		return fmt.Errorf("Invalid request payload")
+	}
+
+	if len(r.SupplierId) != 0 {
+		if _, err := uuid.Parse(r.SupplierId); err != nil {
+			return fmt.Errorf("Invalid Supplier Id")
+		}
+	}
+
+	if len(r.ImageId) != 0 {
+		if _, err := uuid.Parse(r.ImageId); err != nil {
+			return fmt.Errorf("Invalid Image Id")
+		}
+	}
+
+	return nil
+}
+
 func (r *CreateProductRequest) GetLastUpdateDate() time.Time {
 	t, _ := time.Parse("2006-01-02", r.LastUpdateDate)
 	return t
+}
+
+func (r *CreateProductRequest) GetSupplierId() uuid.UUID {
+	v, _ := uuid.Parse(r.SupplierId)
+	return v
+}
+
+func (r *CreateProductRequest) GetImageId() uuid.UUID {
+	v, _ := uuid.Parse(r.ImageId)
+	return v
 }

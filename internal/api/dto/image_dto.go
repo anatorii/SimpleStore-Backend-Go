@@ -5,6 +5,7 @@ import (
 	"storeapi/internal/domain/models"
 	"time"
 
+	"github.com/go-playground/validator/v10"
 	"github.com/google/uuid"
 )
 
@@ -33,4 +34,12 @@ func ModelToImageResponse(m *models.Image) *ImageResponse {
 		Description: m.Description,
 	}
 	return r
+}
+
+func (r *CreateImageRequest) Validate(validate *validator.Validate) error {
+	if err := validate.Struct(r); err != nil {
+		return err
+	}
+
+	return nil
 }

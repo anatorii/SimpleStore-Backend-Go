@@ -112,7 +112,7 @@ func (h ImageHandler) CreateImage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := h.validate.Struct(request); err != nil {
+	if err := request.Validate(h.validate); err != nil {
 		utils.SendError(w, http.StatusBadRequest, err.Error())
 		return
 	}
