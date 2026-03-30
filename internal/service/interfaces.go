@@ -37,7 +37,7 @@ type ProductService interface {
 type ImageService interface {
 	GetById(ctx context.Context, id uuid.UUID) (*models.Image, error)
 	GetByProductId(ctx context.Context, productId uuid.UUID) (*models.Image, error)
-	Create(ctx context.Context, model *models.Image) error
+	Create(ctx context.Context, model *models.Image, product *models.Product) error
 	Update(ctx context.Context, model *models.Image) error
 	Delete(ctx context.Context, id uuid.UUID) error
 }

@@ -10,28 +10,25 @@ import (
 )
 
 type CreateImageRequest struct {
-	Data        string `json:"image" validate:"required,base64"`
-	Description string `json:"description" validate:"required,min=3,max=1024"`
+	ProductId uuid.UUID `json:"product_id" validate:"required"`
+	Data      string    `json:"image" validate:"required,base64"`
 }
 
 type UpdateImageRequest struct {
-	Data        string `json:"image" validate:"required,base64"`
-	Description string `json:"description" validate:"required,min=3,max=1024"`
+	Data string `json:"image" validate:"required,base64"`
 }
 
 type ImageResponse struct {
-	Id          uuid.UUID `json:"id"`
-	Data        string    `json:"image"`
-	Description string    `json:"description"`
-	CreatedAt   time.Time `json:"created_at"`
-	UpdatedAt   time.Time `json:"updated_at"`
+	Id        uuid.UUID `json:"id"`
+	Data      string    `json:"image"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
 }
 
 func ModelToImageResponse(m *models.Image) *ImageResponse {
 	r := &ImageResponse{
-		Id:          m.Id,
-		Data:        base64.StdEncoding.EncodeToString(m.Data),
-		Description: m.Description,
+		Id:   m.Id,
+		Data: base64.StdEncoding.EncodeToString(m.Data),
 	}
 	return r
 }

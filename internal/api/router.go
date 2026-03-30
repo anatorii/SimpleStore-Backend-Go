@@ -101,9 +101,9 @@ func (r *Router) SetupRoutes() http.Handler {
 		// image routes
 		chr.Route("/images", func(ch chi.Router) {
 			ch.Get("/{id}", r.ImageHandler.GetImageById)
-			ch.Get("/{id}/product", r.ImageHandler.GetProductImageById)
+			ch.Get("/product/{id}", r.ImageHandler.GetProductImageById)
 			ch.Post("/", r.ImageHandler.CreateImage)
-			ch.Put("/", r.ImageHandler.UpdateImage)
+			ch.Patch("/{id}", r.ImageHandler.UpdateImage)
 			ch.Delete("/{id}", r.ImageHandler.DeleteImage)
 		})
 	})

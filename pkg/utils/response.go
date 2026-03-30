@@ -3,6 +3,7 @@ package utils
 import (
 	"encoding/json"
 	"net/http"
+	"strconv"
 )
 
 type ErrorResponse struct {
@@ -24,4 +25,12 @@ func SendJSON(w http.ResponseWriter, code int, payload interface{}) {
 
 func SendError(w http.ResponseWriter, code int, message string) {
 	SendJSON(w, code, ErrorResponse{Error: message})
+}
+
+func DownloadImage(w http.ResponseWriter, data []byte) {
+	w.Header().Set("Content-Type", "application/octet-stream")
+	w.Header().Set("Content-Disposition", "attachment; filename=image.png")
+	w.Header().Set("Content-Length", strconv.Itoa(len(data)))
+	w.WriteHeader(http.StatusOK)
+	w.Write(data)
 }

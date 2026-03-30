@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"database/sql"
 	"errors"
 	"storeapi/internal/domain/models"
 
@@ -37,6 +38,9 @@ func (r *productRepo) GetById(ctx context.Context, id uuid.UUID) (*models.Produc
 			  where id = $1`
 	err := r.db.Get(&model, query, id)
 	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, nil
+		}
 		return nil, err
 	}
 	return &model, nil

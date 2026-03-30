@@ -85,9 +85,6 @@ func (s *clientService) UpdateAddress(ctx context.Context, model *models.Client,
 			return fmt.Errorf("failed to update client address (get again): %w", err)
 		}
 	}
-	fmt.Println(model)
-	fmt.Println(addr)
-
 	model.AddressId = addr.Id
 	return s.Update(ctx, model)
 }
