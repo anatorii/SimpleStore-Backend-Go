@@ -10,24 +10,23 @@ import (
 )
 
 type CreateClientRequest struct {
-	ClientName       string `json:"client_name" validate:"required,min=1,max=100"`
-	ClientSurname    string `json:"client_surname" validate:"required,min=1,max=100"`
-	Birthday         string `json:"birthday" validate:"required,datetime=2006-01-02"`
-	Gender           string `json:"gender" validate:"required,oneof=M F"`
-	RegistrationDate string `json:"registration_date" validate:"required,datetime=2006-01-02"`
-	AddressId        string `json:"address_id" validate:"omitempty"`
+	ClientName       string `json:"client_name" validate:"required,min=1,max=100" example:"Ivan"`
+	ClientSurname    string `json:"client_surname" validate:"required,min=1,max=100" example:"Ivanov"`
+	Birthday         string `json:"birthday" validate:"required,datetime=2006-01-02" example:"2000-01-02"`
+	Gender           string `json:"gender" validate:"required,oneof=M F" example:"M"`
+	RegistrationDate string `json:"registration_date" validate:"required,datetime=2006-01-02" example:"2016-01-02"`
 }
 
 type ClientResponse struct {
-	Id               uuid.UUID `json:"id"`
-	ClientName       string    `json:"client_name"`
-	ClientSurname    string    `json:"client_surname"`
-	Birthday         string    `json:"birthday"`
-	Gender           string    `json:"gender"`
-	RegistrationDate string    `json:"registration_date"`
-	AddressId        uuid.UUID `json:"address_id"`
-	CreatedAt        time.Time `json:"created_at"`
-	UpdatedAt        time.Time `json:"updated_at"`
+	Id               uuid.UUID `json:"id" example:"00000000-0000-0000-0000-000000000000"`
+	ClientName       string    `json:"client_name" example:"Ivan"`
+	ClientSurname    string    `json:"client_surname" example:"Ivanov"`
+	Birthday         string    `json:"birthday" example:"2000-01-02"`
+	Gender           string    `json:"gender" example:"M"`
+	RegistrationDate string    `json:"registration_date" example:"2020-01-02"`
+	AddressId        uuid.UUID `json:"address_id" example:"00000000-0000-0000-0000-000000000000"`
+	CreatedAt        time.Time `json:"created_at" example:"0001-01-01T00:00:00Z"`
+	UpdatedAt        time.Time `json:"updated_at" example:"0001-01-01T00:00:00Z"`
 }
 
 func ModelToClientResponse(m *models.Client) *ClientResponse {
@@ -65,12 +64,6 @@ func (r *CreateClientRequest) Validate(validate *validator.Validate) error {
 		return err
 	}
 
-	if len(r.AddressId) != 0 {
-		if _, err := uuid.Parse(r.AddressId); err != nil {
-			return fmt.Errorf("Invalid Address Id")
-		}
-	}
-
 	birthday := r.GetBirthday()
 	regDate := r.GetRegistrationDate()
 
@@ -106,9 +99,4 @@ func (r *CreateClientRequest) GetBirthday() time.Time {
 func (r *CreateClientRequest) GetRegistrationDate() time.Time {
 	t, _ := time.Parse("2006-01-02", r.RegistrationDate)
 	return t
-}
-
-func (r *CreateClientRequest) GetAddressId() uuid.UUID {
-	v, _ := uuid.Parse(r.AddressId)
-	return v
 }

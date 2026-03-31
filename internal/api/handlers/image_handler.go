@@ -1,12 +1,14 @@
 package handlers
 
 import (
+	"encoding/base64"
 	"encoding/json"
 	"net/http"
 	"storeapi/internal/api/dto"
 	"storeapi/internal/domain/models"
 	"storeapi/internal/service"
 	"storeapi/pkg/utils"
+	"strings"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-playground/validator/v10"
@@ -28,12 +30,12 @@ func NewImageHandler(imageService service.ImageService, productService service.P
 }
 
 // GetImage godoc
-// @Summary Get image by id
-// @Description Get image details by id
+// @Summary Get binary image data by id
+// @Description Get binary image data by id
 // @Tags images
-// @Produce json
-// @Param id path string true "Image Id" format(uuid)
-// @Success 200 {object} dto.ImageResponse "Image found"
+// @Produce application/octet-stream
+// @Param id path string true "Image Id" format(uuid) example(00000000-0000-0000-0000-000000000000) default(00000000-0000-0000-0000-000000000000)
+// @Success 200 {object} utils.SuccessResponse "Binary image data"
 // @Failure 400 {object} utils.ErrorResponse "Invalid image Id"
 // @Failure 404 {object} utils.ErrorResponse "Image not found"
 // @Failure 500 {object} utils.ErrorResponse "Internal server error"
@@ -59,12 +61,12 @@ func (h ImageHandler) GetImageById(w http.ResponseWriter, r *http.Request) {
 }
 
 // GetProductImageById godoc
-// @Summary Get product image by product id
-// @Description Get product image details by product id
+// @Summary Get binary image data by product id
+// @Description Get binary image data by product id
 // @Tags images
-// @Produce json
-// @Param id path string true "Product Id" format(uuid)
-// @Success 200 {object} dto.ImageResponse "Image found"
+// @Produce application/octet-stream
+// @Param id path string true "Product Id" format(uuid) example(00000000-0000-0000-0000-000000000000) default(00000000-0000-0000-0000-000000000000)
+// @Success 200 {object} utils.SuccessResponse "Binary image data"
 // @Failure 400 {object} utils.ErrorResponse "Invalid product Id"
 // @Failure 404 {object} utils.ErrorResponse "Image not found"
 // @Failure 500 {object} utils.ErrorResponse "Internal server error"
@@ -96,9 +98,7 @@ func (h ImageHandler) GetProductImageById(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	var response *dto.ImageResponse
-	response = dto.ModelToImageResponse(image)
-	utils.SendJSON(w, http.StatusOK, response)
+	utils.DownloadImage(w, image.Data)
 }
 
 // CreateImage godoc
@@ -108,7 +108,7 @@ func (h ImageHandler) GetProductImageById(w http.ResponseWriter, r *http.Request
 // @Accept json
 // @Produce json
 // @Param request body dto.CreateImageRequest true "Image to create"
-// @Success 200 "Image created successfully"
+// @Success 200 {object} utils.SuccessResponse "Image created successfully"
 // @Failure 400 {object} utils.ErrorResponse "Invalid request payload or validation error"
 // @Failure 500 {object} utils.ErrorResponse "Internal server error"
 // @Router /images [post]
@@ -116,12 +116,19 @@ func (h ImageHandler) CreateImage(w http.ResponseWriter, r *http.Request) {
 	var request dto.CreateImageRequest
 	err := json.NewDecoder(r.Body).Decode(&request)
 	if err != nil {
-		utils.SendError(w, http.StatusBadRequest, err.Error())
+		utils.SendError(w, http.StatusBadRequest, "Invalid json body")
 		return
 	}
 
+	if strings.Contains(request.Data, ",") {
+		parts := strings.SplitN(request.Data, ",", 2)
+		if len(parts) == 2 {
+			request.Data = parts[1]
+		}
+	}
+
 	if err := request.Validate(h.validate); err != nil {
-		utils.SendError(w, http.StatusBadRequest, err.Error())
+		utils.SendError(w, http.StatusBadRequest, "Invalid request payload")
 		return
 	}
 
@@ -131,8 +138,9 @@ func (h ImageHandler) CreateImage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	imageData, _ := base64.StdEncoding.DecodeString(request.Data)
 	image := &models.Image{
-		Data: []byte(request.Data),
+		Data: []byte(imageData),
 	}
 	err = h.imageService.Create(r.Context(), image, product)
 	if err != nil {
@@ -140,7 +148,7 @@ func (h ImageHandler) CreateImage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.SendJSON(w, http.StatusOK, "Image created successfully")
+	utils.SendSuccess(w, "Image created successfully")
 }
 
 // UpdateImage godoc
@@ -149,9 +157,9 @@ func (h ImageHandler) CreateImage(w http.ResponseWriter, r *http.Request) {
 // @Tags images
 // @Accept json
 // @Produce json
-// @Param id path string true "Image Id" format(uuid)
+// @Param id path string true "Image Id" format(uuid) example(00000000-0000-0000-0000-000000000000) default(00000000-0000-0000-0000-000000000000)
 // @Param request body dto.UpdateImageRequest true "Image to update"
-// @Success 200 "Image updated successfully"
+// @Success 200 {object} utils.SuccessResponse "Image updated successfully"
 // @Failure 400 {object} utils.ErrorResponse "Invalid request payload or image Id"
 // @Failure 404 {object} utils.ErrorResponse "Image not found"
 // @Failure 500 {object} utils.ErrorResponse "Internal server error"
@@ -180,27 +188,35 @@ func (h ImageHandler) UpdateImage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := h.validate.Struct(request); err != nil {
+	if strings.Contains(request.Data, ",") {
+		parts := strings.SplitN(request.Data, ",", 2)
+		if len(parts) == 2 {
+			request.Data = parts[1]
+		}
+	}
+
+	if err := request.Validate(h.validate); err != nil {
 		utils.SendError(w, http.StatusBadRequest, "Invalid request payload")
 		return
 	}
 
-	image.Data = []byte(request.Data)
+	imageData, _ := base64.StdEncoding.DecodeString(request.Data)
+	image.Data = []byte(imageData)
 	err = h.imageService.Update(r.Context(), image)
 	if err != nil {
 		utils.SendError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	utils.SendJSON(w, http.StatusOK, "Image updated successfully")
+	utils.SendSuccess(w, "Image updated successfully")
 }
 
 // DeleteImage godoc
 // @Summary Delete image
 // @Description Delete image by ID
 // @Tags images
-// @Param id path string true "User ID" format(uuid)
-// @Success 200 "Image deleted successfully"
+// @Param id path string true "User ID" format(uuid) example(00000000-0000-0000-0000-000000000000) default(00000000-0000-0000-0000-000000000000)
+// @Success 200 {object} utils.SuccessResponse "Image deleted successfully"
 // @Failure 400 {object} utils.ErrorResponse "Invalid image ID"
 // @Failure 404 {object} utils.ErrorResponse "Image not found"
 // @Failure 500 {object} utils.ErrorResponse "Internal server error"
@@ -222,5 +238,5 @@ func (h ImageHandler) DeleteImage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.SendJSON(w, http.StatusOK, "Image deleted successfully")
+	utils.SendSuccess(w, "Image deleted successfully")
 }

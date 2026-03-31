@@ -34,7 +34,7 @@ func NewClientHandler(clientService service.ClientService) *ClientHandler {
 // @Produce json
 // @Param limit query int false "Limit number of results" default(0) minimum(0)
 // @Param offset query int false "Offset for pagination" default(0) minimum(0)
-// @Success 200 {object} dto.ClientResponse "Clients array"
+// @Success 200 {object} []dto.ClientResponse "Clients array"
 // @Failure 500 {object} utils.ErrorResponse "Internal server error"
 // @Router /clients [get]
 func (h ClientHandler) GetAllClients(w http.ResponseWriter, r *http.Request) {
@@ -57,8 +57,8 @@ func (h ClientHandler) GetAllClients(w http.ResponseWriter, r *http.Request) {
 // @Description Get client details by name and surname
 // @Tags clients
 // @Produce json
-// @Param name path string true "name" format(string)
-// @Param surname path string true "surname" format(string)
+// @Param name path string true "name" format(string) example(Ivan) default(Ivan)
+// @Param surname path string true "surname" format(string) example(Ivanov) default(Ivanov)
 // @Success 200 {object} dto.ClientResponse "Client found"
 // @Failure 400 {object} utils.ErrorResponse "Name or surname are not specified"
 // @Failure 404 {object} utils.ErrorResponse "Client not found"
@@ -96,7 +96,7 @@ func (h ClientHandler) GetClientByName(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce json
 // @Param request body dto.CreateClientRequest true "Client data"
-// @Success 200 "Client created successfully"
+// @Success 200 {object} utils.SuccessResponse "Client created successfully"
 // @Failure 400 {object} utils.ErrorResponse "Invalid request payload or validation error"
 // @Failure 500 {object} utils.ErrorResponse "Internal server error"
 // @Router /clients [post]
@@ -119,7 +119,6 @@ func (h ClientHandler) CreateClient(w http.ResponseWriter, r *http.Request) {
 		Birthday:         request.GetBirthday(),
 		Gender:           request.Gender,
 		RegistrationDate: request.GetRegistrationDate(),
-		AddressId:        request.GetAddressId(),
 	}
 	err = h.clientService.Create(r.Context(), &client)
 	if err != nil {
@@ -127,7 +126,7 @@ func (h ClientHandler) CreateClient(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.SendJSON(w, http.StatusOK, "Client created successfully")
+	utils.SendSuccess(w, "Client created successfully")
 }
 
 // UpdateClientAddress godoc
@@ -136,9 +135,9 @@ func (h ClientHandler) CreateClient(w http.ResponseWriter, r *http.Request) {
 // @Tags clients
 // @Accept json
 // @Produce json
-// @Param id path string true "Client Id" format(uuid)
+// @Param id path string true "Client Id" format(uuid) example(00000000-0000-0000-0000-000000000000) default(00000000-0000-0000-0000-000000000000)
 // @Param request body dto.UpdateAddressRequest true "Client address to update"
-// @Success 200 "Client address updated successfully"
+// @Success 200 {object} utils.SuccessResponse "Client address updated successfully"
 // @Failure 400 {object} utils.ErrorResponse "Invalid request payload or client ID"
 // @Failure 404 {object} utils.ErrorResponse "Client not found"
 // @Failure 500 {object} utils.ErrorResponse "Internal server error"
@@ -182,15 +181,15 @@ func (h ClientHandler) UpdateClientAddress(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	utils.SendJSON(w, http.StatusOK, "Client address updated successfully")
+	utils.SendSuccess(w, "Client address updated successfully")
 }
 
 // DeleteClient godoc
 // @Summary Delete client
 // @Description Delete client by ID
 // @Tags clients
-// @Param id path string true "User ID" format(uuid)
-// @Success 200 "Client deleted successfully"
+// @Param id path string true "User ID" format(uuid) example(00000000-0000-0000-0000-000000000000) default(00000000-0000-0000-0000-000000000000)
+// @Success 200 {object} utils.SuccessResponse "Client deleted successfully"
 // @Failure 400 {object} utils.ErrorResponse "Invalid client ID"
 // @Failure 404 {object} utils.ErrorResponse "Client not found"
 // @Failure 500 {object} utils.ErrorResponse "Internal server error"
@@ -212,5 +211,5 @@ func (h ClientHandler) DeleteClient(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.SendJSON(w, http.StatusOK, "Client deleted successfully")
+	utils.SendSuccess(w, "Client deleted successfully")
 }

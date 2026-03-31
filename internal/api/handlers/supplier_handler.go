@@ -30,7 +30,7 @@ func NewSupplierHandler(supplierService service.SupplierService) *SupplierHandle
 // @Description Get all supplier
 // @Tags suppliers
 // @Produce json
-// @Success 200 {object} dto.SupplierResponse "Suppliers array"
+// @Success 200 {object} []dto.SupplierResponse "Suppliers array"
 // @Failure 500 {object} utils.ErrorResponse "Internal server error"
 // @Router /suppliers [get]
 func (h SupplierHandler) GetAllSuppliers(w http.ResponseWriter, r *http.Request) {
@@ -50,7 +50,7 @@ func (h SupplierHandler) GetAllSuppliers(w http.ResponseWriter, r *http.Request)
 // @Description Get supplier details by id
 // @Tags suppliers
 // @Produce json
-// @Param id path string true "Supplier Id" format(uuid)
+// @Param id path string true "Supplier Id" format(uuid) example(00000000-0000-0000-0000-000000000000) default(00000000-0000-0000-0000-000000000000)
 // @Success 200 {object} dto.SupplierResponse "Supplier found"
 // @Failure 400 {object} utils.ErrorResponse "Invalid supplier Id"
 // @Failure 404 {object} utils.ErrorResponse "Supplier not found"
@@ -65,6 +65,10 @@ func (h SupplierHandler) GetSupplierById(w http.ResponseWriter, r *http.Request)
 
 	supplier, err := h.supplierService.GetById(r.Context(), id)
 	if err != nil {
+		utils.SendError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+	if supplier == nil {
 		utils.SendError(w, http.StatusNotFound, "Supplier not found")
 		return
 	}
@@ -81,7 +85,7 @@ func (h SupplierHandler) GetSupplierById(w http.ResponseWriter, r *http.Request)
 // @Accept json
 // @Produce json
 // @Param request body dto.CreateSupplierRequest true "Supplier data"
-// @Success 200 {object} dto.SupplierResponse "Supplier created successfully"
+// @Success 200 {object} utils.SuccessResponse "Supplier created successfully"
 // @Failure 400 {object} utils.ErrorResponse "Invalid request payload or validation error"
 // @Failure 500 {object} utils.ErrorResponse "Internal server error"
 // @Router /suppliers [post]
@@ -109,7 +113,7 @@ func (h SupplierHandler) CreateSupplier(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	utils.SendJSON(w, http.StatusOK, "Supplier created successfully")
+	utils.SendSuccess(w, "Supplier created successfully")
 }
 
 // UpdateSupplierAddress godoc
@@ -118,9 +122,9 @@ func (h SupplierHandler) CreateSupplier(w http.ResponseWriter, r *http.Request) 
 // @Tags suppliers
 // @Accept json
 // @Produce json
-// @Param id path string true "Supplier Id" format(uuid)
+// @Param id path string true "Supplier Id" format(uuid) example(00000000-0000-0000-0000-000000000000) default(00000000-0000-0000-0000-000000000000)
 // @Param request body dto.UpdateAddressRequest true "Supplier address to update"
-// @Success 200 {object} dto.SupplierResponse "Supplier address updated successfully"
+// @Success 200 {object} utils.SuccessResponse "Supplier address updated successfully"
 // @Failure 400 {object} utils.ErrorResponse "Invalid request payload or supplier Id"
 // @Failure 404 {object} utils.ErrorResponse "Supplier not found"
 // @Failure 500 {object} utils.ErrorResponse "Internal server error"
@@ -164,15 +168,15 @@ func (h SupplierHandler) UpdateSupplierAddress(w http.ResponseWriter, r *http.Re
 		return
 	}
 
-	utils.SendJSON(w, http.StatusOK, "Supplier address updated successfully")
+	utils.SendSuccess(w, "Supplier address updated successfully")
 }
 
 // DeleteSupplier godoc
 // @Summary Delete supplier
 // @Description Delete supplier by ID
 // @Tags suppliers
-// @Param id path string true "User ID" format(uuid)
-// @Success 200 "Supplier deleted successfully"
+// @Param id path string true "User ID" format(uuid) example(00000000-0000-0000-0000-000000000000) default(00000000-0000-0000-0000-000000000000)
+// @Success 200 {object} utils.SuccessResponse "Supplier deleted successfully"
 // @Failure 400 {object} utils.ErrorResponse "Invalid supplier Id"
 // @Failure 404 {object} utils.ErrorResponse "Supplier not found"
 // @Failure 500 {object} utils.ErrorResponse "Internal server error"
@@ -194,5 +198,5 @@ func (h SupplierHandler) DeleteSupplier(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	utils.SendJSON(w, http.StatusOK, "Supplier deleted successfully")
+	utils.SendSuccess(w, "Supplier deleted successfully")
 }

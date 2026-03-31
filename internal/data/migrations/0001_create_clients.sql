@@ -11,3 +11,7 @@ create table if not exists clients (
     created_at          timestamptz default current_timestamp,
     updated_at          timestamptz default current_timestamp
 );
+
+ALTER TABLE clients
+ADD CONSTRAINT clients_unique_key
+UNIQUE (client_name, client_surname, birthday, gender);

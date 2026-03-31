@@ -8,3 +8,7 @@ create table if not exists addresses (
     created_at          timestamptz default current_timestamp,
     updated_at          timestamptz default current_timestamp
 );
+
+ALTER TABLE addresses
+ADD CONSTRAINT addresses_unique_key
+UNIQUE (country, city, street);

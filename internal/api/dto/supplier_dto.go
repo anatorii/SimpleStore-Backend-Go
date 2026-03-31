@@ -10,18 +10,18 @@ import (
 )
 
 type CreateSupplierRequest struct {
-	Name        string `json:"name" validate:"required,min=3,max=255"`
-	AddressId   string `json:"address_id" validate:"omitempty"`
-	PhoneNumber string `json:"phone_number" validate:"required,min=3,max=255"`
+	Name        string `json:"name" validate:"required,min=3,max=255" example:"Dell"`
+	AddressId   string `json:"address_id" validate:"omitempty" example:"00000000-0000-0000-0000-000000000000"`
+	PhoneNumber string `json:"phone_number" validate:"required,min=3,max=255" example:"00 1004 443"`
 }
 
 type SupplierResponse struct {
-	Id          uuid.UUID `json:"id"`
-	Name        string    `json:"name"`
-	AddressId   string    `json:"address_id"`
-	PhoneNumber string    `json:"phone_number"`
-	CreatedAt   time.Time `json:"created_at"`
-	UpdatedAt   time.Time `json:"updated_at"`
+	Id          uuid.UUID `json:"id" example:"00000000-0000-0000-0000-000000000000"`
+	Name        string    `json:"name" example:"Dell"`
+	AddressId   string    `json:"address_id" example:"00000000-0000-0000-0000-000000000000"`
+	PhoneNumber string    `json:"phone_number" example:"00 1004 443"`
+	CreatedAt   time.Time `json:"created_at" example:"0001-01-01T00:00:00Z"`
+	UpdatedAt   time.Time `json:"updated_at" example:"0001-01-01T00:00:00Z"`
 }
 
 func ModelToSupplierResponse(m *models.Supplier) *SupplierResponse {

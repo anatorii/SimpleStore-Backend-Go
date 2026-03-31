@@ -10,29 +10,30 @@ import (
 )
 
 type CreateProductRequest struct {
-	Name           string  `json:"name" validate:"required,min=3,max=255"`
-	Category       string  `json:"category" validate:"required,min=3,max=255"`
-	Price          float64 `json:"price" validate:"gt=0"`
-	AvailableStock int     `json:"available_stock" validate:"gte=0"`
-	LastUpdateDate string  `json:"last_update_date" validate:"required,datetime=2006-01-02"`
-	SupplierId     string  `json:"supplier_id" validate:"omitempty"`
-	ImageId        string  `json:"image_id" validate:"omitempty"`
+	Name           string  `json:"name" validate:"required,min=3,max=255" example:"Hammer"`
+	Category       string  `json:"category" validate:"required,min=3,max=255" example:"DIY"`
+	Price          float64 `json:"price" validate:"gt=0" example:"100"`
+	AvailableStock int     `json:"available_stock" validate:"gte=0" example:"10"`
+	LastUpdateDate string  `json:"last_update_date" validate:"required,datetime=2006-01-02" example:"2006-01-02"`
+	SupplierId     string  `json:"supplier_id" validate:"required" example:"00000000-0000-0000-0000-000000000000"`
+	ImageId        string  `json:"image_id" validate:"omitempty" example:""`
 }
 
 type UpdateProductAvailableRequest struct {
-	AvailableStock int `json:"available_stock" validate:"gte=0"`
+	AvailableStock int `json:"available_stock" validate:"required,gte=0" example:"10"`
 }
 
 type ProductResponse struct {
-	Id             uuid.UUID `json:"id"`
-	Name           string    `json:"name"`
-	Price          float64   `json:"price"`
-	AvailableStock int       `json:"available_stock"`
-	LastUpdateDate string    `json:"last_update_date"`
-	SupplierId     uuid.UUID `json:"supplier_id"`
-	ImageId        uuid.UUID `json:"image_id"`
-	CreatedAt      time.Time `json:"created_at"`
-	UpdatedAt      time.Time `json:"updated_at"`
+	Id             uuid.UUID `json:"id" example:"00000000-0000-0000-0000-000000000000"`
+	Name           string    `json:"name" example:"Hammer"`
+	Category       string    `json:"category" example:"DIY"`
+	Price          float64   `json:"price" example:"100"`
+	AvailableStock int       `json:"available_stock" example:"10"`
+	LastUpdateDate string    `json:"last_update_date" example:"2006-01-02"`
+	SupplierId     uuid.UUID `json:"supplier_id" example:"00000000-0000-0000-0000-000000000000"`
+	ImageId        uuid.UUID `json:"image_id" example:"00000000-0000-0000-0000-000000000000"`
+	CreatedAt      time.Time `json:"created_at" example:"0001-01-01T00:00:00Z"`
+	UpdatedAt      time.Time `json:"updated_at" example:"0001-01-01T00:00:00Z"`
 }
 
 func ModelToProductResponse(m *models.Product) *ProductResponse {

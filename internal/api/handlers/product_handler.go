@@ -30,7 +30,7 @@ func NewProductHandler(productService service.ProductService) *ProductHandler {
 // @Description Get all product
 // @Tags products
 // @Produce json
-// @Success 200 {object} dto.ProductResponse "Products array"
+// @Success 200 {object} []dto.ProductResponse "Products array"
 // @Failure 500 {object} utils.ErrorResponse "Internal server error"
 // @Router /products [get]
 func (h ProductHandler) GetAllProducts(w http.ResponseWriter, r *http.Request) {
@@ -50,7 +50,7 @@ func (h ProductHandler) GetAllProducts(w http.ResponseWriter, r *http.Request) {
 // @Description Get product details by id
 // @Tags products
 // @Produce json
-// @Param id path string true "Product Id" format(uuid)
+// @Param id path string true "Product Id" format(uuid) example(00000000-0000-0000-0000-000000000000) default(00000000-0000-0000-0000-000000000000)
 // @Success 200 {object} dto.ProductResponse "Product found"
 // @Failure 400 {object} utils.ErrorResponse "Invalid product Id"
 // @Failure 404 {object} utils.ErrorResponse "Product not found"
@@ -81,7 +81,7 @@ func (h ProductHandler) GetProductById(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce json
 // @Param request body dto.CreateProductRequest true "Product data"
-// @Success 200 "Product created successfully"
+// @Success 200 {object} utils.SuccessResponse "Product created successfully"
 // @Failure 400 {object} utils.ErrorResponse "Invalid request payload or validation error"
 // @Failure 500 {object} utils.ErrorResponse "Internal server error"
 // @Router /products [post]
@@ -113,7 +113,7 @@ func (h ProductHandler) CreateProduct(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.SendJSON(w, http.StatusOK, "Product created successfully")
+	utils.SendSuccess(w, "Product created successfully")
 }
 
 // UpdateProductAvailable godoc
@@ -122,9 +122,9 @@ func (h ProductHandler) CreateProduct(w http.ResponseWriter, r *http.Request) {
 // @Tags products
 // @Accept json
 // @Produce json
-// @Param id path string true "Product ID" format(uuid)
+// @Param id path string true "Product ID" format(uuid) example(00000000-0000-0000-0000-000000000000) default(00000000-0000-0000-0000-000000000000)
 // @Param request body dto.UpdateProductAvailableRequest true "Product available in stock to update"
-// @Success 200 "Product available updated successfully"
+// @Success 200 {object} utils.SuccessResponse "Product available updated successfully"
 // @Failure 400 {object} utils.ErrorResponse "Invalid request payload or product ID"
 // @Failure 404 {object} utils.ErrorResponse "Product not found"
 // @Failure 500 {object} utils.ErrorResponse "Internal server error"
@@ -161,15 +161,15 @@ func (h ProductHandler) UpdateProductAvailable(w http.ResponseWriter, r *http.Re
 		return
 	}
 
-	utils.SendJSON(w, http.StatusOK, "Product available updated successfully")
+	utils.SendSuccess(w, "Product available updated successfully")
 }
 
 // DeleteProduct godoc
 // @Summary Delete product
 // @Description Delete product by ID
 // @Tags products
-// @Param id path string true "User ID" format(uuid)
-// @Success 200 "Product deleted successfully"
+// @Param id path string true "User ID" format(uuid) example(00000000-0000-0000-0000-000000000000) default(00000000-0000-0000-0000-000000000000)
+// @Success 200 {object} utils.SuccessResponse "Product deleted successfully"
 // @Failure 400 {object} utils.ErrorResponse "Invalid product Id"
 // @Failure 404 {object} utils.ErrorResponse "Product not found"
 // @Failure 500 {object} utils.ErrorResponse "Internal server error"
@@ -191,5 +191,5 @@ func (h ProductHandler) DeleteProduct(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.SendJSON(w, http.StatusOK, "Product deleted successfully")
+	utils.SendSuccess(w, "Product deleted successfully")
 }
