@@ -22,7 +22,7 @@ swagger:
 
 server: swagger
 	go build -o shop cmd/shop/main.go
-	./bin/shop
+	./shop
 
 build: swagger
 	go build -o shop cmd/shop/main.go
