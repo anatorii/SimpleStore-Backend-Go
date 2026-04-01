@@ -20,7 +20,8 @@ func NewImageRepo(db *sqlx.DB) ImageRepo {
 
 func (r *imageRepo) GetById(ctx context.Context, id uuid.UUID) (*models.Image, error) {
 	var model models.Image
-	query := `select id, data, coalesce(description, '') description
+	query := `select id, data, coalesce(description, '') description,
+					 created_at, updated_at
 			  from images
 			  where id = $1`
 	err := r.db.Get(&model, query, id)
@@ -35,7 +36,8 @@ func (r *imageRepo) GetById(ctx context.Context, id uuid.UUID) (*models.Image, e
 
 func (r *imageRepo) GetByProductId(ctx context.Context, productId uuid.UUID) (*models.Image, error) {
 	var model models.Image
-	query := `select id, data, coalesce(description, '') description
+	query := `select id, data, coalesce(description, '') description,
+					 created_at, updated_at
 			  from images
 			  where id = $1`
 	err := r.db.Get(&model, query, productId)

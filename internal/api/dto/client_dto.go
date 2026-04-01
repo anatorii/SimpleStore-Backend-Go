@@ -38,6 +38,8 @@ func ModelToClientResponse(m *models.Client) *ClientResponse {
 		Gender:           m.Gender,
 		RegistrationDate: m.RegistrationDate.Format("2006-01-02"),
 		AddressId:        m.AddressId,
+		CreatedAt:        m.CreatedAt,
+		UpdatedAt:        m.UpdatedAt,
 	}
 	return &r
 }
@@ -53,6 +55,8 @@ func ModelToClientResponseList(lm []*models.Client) []*ClientResponse {
 			Gender:           m.Gender,
 			RegistrationDate: m.RegistrationDate.Format("2006-01-02"),
 			AddressId:        m.AddressId,
+			CreatedAt:        m.CreatedAt,
+			UpdatedAt:        m.UpdatedAt,
 		}
 		l = append(l, &r)
 	}

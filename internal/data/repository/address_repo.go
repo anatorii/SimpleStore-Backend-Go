@@ -20,7 +20,8 @@ func NewAddressRepo(db *sqlx.DB) AddressRepo {
 
 func (r *addressRepo) GetById(ctx context.Context, id uuid.UUID) (*models.Address, error) {
 	var model models.Address
-	query := `select id, country, city, street
+	query := `select id, country, city, street,
+					 created_at, updated_at
 			  from addresses
 			  where id = $1`
 	err := r.db.Get(&model, query, id)
@@ -35,7 +36,8 @@ func (r *addressRepo) GetById(ctx context.Context, id uuid.UUID) (*models.Addres
 
 func (r *addressRepo) GetByAddress(ctx context.Context, country, city, street string) (*models.Address, error) {
 	var model models.Address
-	query := `select id, country, city, street
+	query := `select id, country, city, street,
+					 created_at, updated_at
 			  from addresses
 			  where country = $1 and city = $2 and street = $3`
 	err := r.db.Get(&model, query, country, city, street)

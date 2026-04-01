@@ -20,7 +20,8 @@ func NewSupplierRepo(db *sqlx.DB) SupplierRepo {
 
 func (r *supplierRepo) GetAll(ctx context.Context) ([]*models.Supplier, error) {
 	var models []*models.Supplier
-	query := `select id, name, address_id, phone_number
+	query := `select id, name, address_id, phone_number,
+					 created_at, updated_at
 			  from suppliers`
 	err := r.db.Select(&models, query)
 	if err != nil {
@@ -31,7 +32,8 @@ func (r *supplierRepo) GetAll(ctx context.Context) ([]*models.Supplier, error) {
 
 func (r *supplierRepo) GetById(ctx context.Context, id uuid.UUID) (*models.Supplier, error) {
 	var model models.Supplier
-	query := `select id, name, address_id, phone_number
+	query := `select id, name, address_id, phone_number,
+					 created_at, updated_at
 			  from suppliers
 			  where id = $1`
 	err := r.db.Get(&model, query, id)

@@ -28,8 +28,10 @@ type ImageResponse struct {
 
 func ModelToImageResponse(m *models.Image) *ImageResponse {
 	r := &ImageResponse{
-		Id:   m.Id,
-		Data: base64.StdEncoding.EncodeToString(m.Data),
+		Id:        m.Id,
+		Data:      base64.StdEncoding.EncodeToString(m.Data),
+		CreatedAt: m.CreatedAt,
+		UpdatedAt: m.UpdatedAt,
 	}
 	return r
 }

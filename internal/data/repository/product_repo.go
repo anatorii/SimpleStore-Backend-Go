@@ -21,7 +21,8 @@ func NewProductRepo(db *sqlx.DB) ProductRepo {
 func (r *productRepo) GetAll(ctx context.Context) ([]*models.Product, error) {
 	var models []*models.Product
 	query := `select id, name, category, price,
-					 available_stock, last_update_date, supplier_id, image_id
+					 available_stock, last_update_date, supplier_id, image_id,
+					 created_at, updated_at
 			  from products`
 	err := r.db.Select(&models, query)
 	if err != nil {
@@ -33,7 +34,8 @@ func (r *productRepo) GetAll(ctx context.Context) ([]*models.Product, error) {
 func (r *productRepo) GetById(ctx context.Context, id uuid.UUID) (*models.Product, error) {
 	var model models.Product
 	query := `select id, name, category, price,
-					 available_stock, last_update_date, supplier_id, image_id
+					 available_stock, last_update_date, supplier_id, image_id,
+					 created_at, updated_at
 			  from products
 			  where id = $1`
 	err := r.db.Get(&model, query, id)

@@ -14,4 +14,6 @@ type Client struct {
 	Gender           string    `db:"gender"`
 	RegistrationDate time.Time `db:"registration_date"`
 	AddressId        uuid.UUID `db:"address_id"`
+	CreatedAt        time.Time `db:"created_at"`
+	UpdatedAt        time.Time `db:"updated_at"`
 }

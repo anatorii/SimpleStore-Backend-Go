@@ -30,6 +30,8 @@ func ModelToSupplierResponse(m *models.Supplier) *SupplierResponse {
 		Name:        m.Name,
 		PhoneNumber: m.PhoneNumber,
 		AddressId:   m.AddressId.String(),
+		CreatedAt:   m.CreatedAt,
+		UpdatedAt:   m.UpdatedAt,
 	}
 	return &r
 }
@@ -42,6 +44,8 @@ func ModelToSupplierResponseList(m []*models.Supplier) []*SupplierResponse {
 			Name:        v.Name,
 			PhoneNumber: v.PhoneNumber,
 			AddressId:   v.AddressId.String(),
+			CreatedAt:   v.CreatedAt,
+			UpdatedAt:   v.UpdatedAt,
 		}
 		l = append(l, &r)
 	}

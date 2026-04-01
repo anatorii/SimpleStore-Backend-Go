@@ -22,10 +22,10 @@ swagger:
 
 server: swagger
 	go build -o shop cmd/shop/main.go
-	./shop
+	./bin/shop
 
 build: swagger
-	go build -o bin/shop cmd/shop/main.go
+	go build -o shop cmd/shop/main.go
 
 help:
 	@echo "Available commands:"

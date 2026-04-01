@@ -23,12 +23,14 @@ func (r *clientRepo) GetAll(ctx context.Context, limit, offset int) ([]*models.C
 	var err error
 	if limit == 0 {
 		query := `select id, client_name, client_surname, birthday, 
-						 gender, registration_date, address_id
+						 gender, registration_date, address_id,
+						 created_at, updated_at
 				  from clients`
 		err = r.db.Select(&clients, query)
 	} else {
 		query := `select id, client_name, client_surname, birthday, 
-			         gender, registration_date, address_id
+			         gender, registration_date, address_id,
+					 created_at, updated_at
 			  from clients
 			  limit $1 offset $2`
 		err = r.db.Select(&clients, query, limit, offset)
@@ -45,7 +47,8 @@ func (r *clientRepo) GetAll(ctx context.Context, limit, offset int) ([]*models.C
 func (r *clientRepo) GetById(ctx context.Context, id uuid.UUID) (*models.Client, error) {
 	var model models.Client
 	query := `select id, client_name, client_surname, birthday,
-	                 gender, registration_date, address_id
+	                 gender, registration_date, address_id,
+					 created_at, updated_at
 			  from clients
 			  where id = $1`
 	err := r.db.Get(&model, query, id)
@@ -61,7 +64,8 @@ func (r *clientRepo) GetById(ctx context.Context, id uuid.UUID) (*models.Client,
 func (r *clientRepo) GetByName(ctx context.Context, fullname models.FullName) (*models.Client, error) {
 	var model models.Client
 	query := `select id, client_name, client_surname, birthday,
-	                 gender, registration_date, address_id
+	                 gender, registration_date, address_id,
+					 created_at, updated_at
 			  from clients
 			  where client_name = $1 and client_surname = $2`
 	err := r.db.Get(&model, query, fullname.Name, fullname.Surname)

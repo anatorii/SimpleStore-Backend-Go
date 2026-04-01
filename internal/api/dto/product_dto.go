@@ -40,11 +40,14 @@ func ModelToProductResponse(m *models.Product) *ProductResponse {
 	r := ProductResponse{
 		Id:             m.Id,
 		Name:           m.Name,
+		Category:       m.Category,
 		Price:          m.Price,
 		AvailableStock: m.AvailableStock,
 		LastUpdateDate: m.LastUpdateDate.Format("2006-01-02"),
 		SupplierId:     m.SupplierId,
 		ImageId:        m.ImageId,
+		CreatedAt:      m.CreatedAt,
+		UpdatedAt:      m.UpdatedAt,
 	}
 	return &r
 }
@@ -55,11 +58,14 @@ func ModelToProductResponseList(lm []*models.Product) []*ProductResponse {
 		r := ProductResponse{
 			Id:             m.Id,
 			Name:           m.Name,
+			Category:       m.Category,
 			Price:          m.Price,
 			AvailableStock: m.AvailableStock,
 			LastUpdateDate: m.LastUpdateDate.Format("2006-01-02"),
 			SupplierId:     m.SupplierId,
 			ImageId:        m.ImageId,
+			CreatedAt:      m.CreatedAt,
+			UpdatedAt:      m.UpdatedAt,
 		}
 		l = append(l, &r)
 	}

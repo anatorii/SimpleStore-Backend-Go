@@ -15,4 +15,6 @@ type Product struct {
 	LastUpdateDate time.Time `db:"last_update_date"`
 	SupplierId     uuid.UUID `db:"supplier_id"`
 	ImageId        uuid.UUID `db:"image_id"`
+	CreatedAt      time.Time `db:"created_at"`
+	UpdatedAt      time.Time `db:"updated_at"`
 }
